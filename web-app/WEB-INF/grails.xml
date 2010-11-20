@@ -1,0 +1,27 @@
+<grails>
+  <resources>
+    <resource>org.grails.appengine.AppEngineReloadController</resource>
+    <resource>BootStrap</resource>
+    <resource>BuildConfig</resource>
+    <resource>Config</resource>
+    <resource>DataSource</resource>
+    <resource>resources</resource>
+    <resource>UrlMappings</resource>
+    <resource>com.morningmail.controller.AnotherController</resource>
+    <resource>com.morningmail.controller.FetchFeedsController</resource>
+    <resource>com.morningmail.controller.SignupController</resource>
+    <resource>com.morningmail.controller.TestController</resource>
+    <resource>com.morningmail.controller.YahooNewsFeedController</resource>
+    <resource>com.morningmail.domain.Feed</resource>
+    <resource>com.morningmail.domain.OAuthToken</resource>
+    <resource>com.morningmail.domain.PersonalFeed</resource>
+    <resource>com.morningmail.domain.User</resource>
+    <resource>com.morningmail.services.FetchFeedsService</resource>
+    <resource>com.morningmail.services.GoogleCalendarService</resource>
+    <resource>com.morningmail.services.YahooNewsFeedService</resource>
+  </resources>
+  <plugins>
+    <plugin>AppEngineGrailsPlugin</plugin>
+    <plugin>GormJpaGrailsPlugin</plugin>
+  </plugins>
+</grails>
