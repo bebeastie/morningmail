@@ -7,28 +7,20 @@ import javax.persistence.*;
 import com.google.appengine.api.datastore.Text
 
 @Entity
-class PersonalFeed implements Serializable {
+class Interest implements Serializable {
+	public static final String TYPE_TOP_NEWS = "top_news"
 	public static final String TYPE_GOOGLE_CAL = "google_cal"
 	
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Key id
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	User user;
-	
 	@Basic
 	String type
 	
 	@Basic
-	Text html
-	
-	@Basic
-	Text plainText
-	
-	@Basic
-	Date lastUpdated
-	
+	String displayName
+				
     static constraints = {
     	id visible:false
 	}

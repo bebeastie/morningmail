@@ -4,6 +4,7 @@ package com.morningmail.domain
 
 import javax.persistence.*;
 import com.google.appengine.api.datastore.Key;
+import java.util.Set;
 
 @Entity
 class User implements Serializable {
@@ -18,9 +19,12 @@ class User implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();
 
+	@Basic
+	Set<Key> interests;
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<PersonalFeed> pFeeds = new ArrayList<PersonalFeed>();
-	
+
     static constraints = {
     	id(visible:false)
 		email(nullable: false, blank:false)	
