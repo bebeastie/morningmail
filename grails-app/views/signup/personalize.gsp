@@ -2,6 +2,7 @@
 <%@ page import="com.morningmail.domain.Interest" %>
 
 <%
+Interest weather = Interest.findByType(Interest.TYPE_WEATHER)
 Interest topNews = Interest.findByType(Interest.TYPE_TOP_NEWS)
 Interest googleCal = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
 
@@ -17,6 +18,10 @@ Interest googleCal = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
 		<g:form name="interests" action="personalize">
 		<g:hiddenField name="saveInterests" value="${true}" />
 		<table>
+		<tr>
+			<td>${weather.displayName}</td>
+			<td><g:checkBox name="${weather.type}" value="${user.interests.contains(weather.id)}" /></td>
+		</tr>
 		<tr>
 			<td>${topNews.displayName}</td>
 			<td><g:checkBox name="${topNews.type}" value="${user.interests.contains(topNews.id)}" /></td>

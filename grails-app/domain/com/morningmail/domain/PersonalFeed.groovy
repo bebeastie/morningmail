@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.Text
 @Entity
 class PersonalFeed implements Serializable {
 	public static final String TYPE_GOOGLE_CAL = "google_cal"
+	public static final String TYPE_WEATHER = "weather"
 	
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

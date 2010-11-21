@@ -269,6 +269,7 @@ class GoogleCalendarService implements InitializingBean, PersonalFeedService {
 		   }
 		   
 		   feed.html = new Text(events)
+		   feed.plainText = new Text(events)
 		   feed.lastUpdated = new Date()
 		   		   
 	   } else {
@@ -287,8 +288,7 @@ class GoogleCalendarService implements InitializingBean, PersonalFeedService {
    }
    
    public String getPlainText(User u) {
-	   //@TODO
-	   return " "
+   		return getHtml(u)
    }
    
 }

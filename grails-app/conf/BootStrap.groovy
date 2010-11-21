@@ -8,6 +8,11 @@ class BootStrap {
 			topNews.type = Interest.TYPE_TOP_NEWS
 			topNews.displayName = "Top News"
 			topNews.save()
+
+			Interest weather = new Interest()
+			weather.type = Interest.TYPE_WEATHER
+			weather.displayName = "Weather"
+			weather.save()
 			
 			Interest googleCal = new Interest()
 			googleCal.type = Interest.TYPE_GOOGLE_CAL

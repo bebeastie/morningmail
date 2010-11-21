@@ -16,6 +16,12 @@ class User implements Serializable {
 	@Basic 
 	String email
 	
+	@Basic
+	String zipCode
+	
+	@Basic
+	Date desiredDeliveryTime
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();
 
@@ -25,8 +31,11 @@ class User implements Serializable {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<PersonalFeed> pFeeds = new ArrayList<PersonalFeed>();
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	List<Email> emails = new ArrayList<Email>();
+	
     static constraints = {
     	id(visible:false)
-		email(nullable: false, blank:false)	
+		email(email:true, nullable: false, blank:false)	
 	}
 }

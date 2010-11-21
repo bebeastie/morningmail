@@ -7,6 +7,21 @@ class UrlMappings {
 			}
 		}
 
+		"/email/fetch/$id" {
+			controller = "email"
+			action = "fetch"
+		 }
+		
+		"/email/render/$id" {
+			controller = "email"
+			action = "render"
+		 }
+		
+		"/email/send/$id" {
+			controller = "email"
+			action = "send"
+		 }
+		
 		"/"(view:"/index")
 		"500"(view:'/error')
 	}
