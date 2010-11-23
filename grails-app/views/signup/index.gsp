@@ -7,17 +7,37 @@
 		<g:form controller="signup" action="index">
 		<table>
 			<tr>
+				<td>Invite secret:</td>
+				<td>
+					<input id="inviteSecret" type="text" name="inviteSecret" value="" title="inviteSecret" spellcheck="false"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Name:</td>
+				<td>
+					<input id="name" type="text" name="name" value="${user?.name}" title="name" spellcheck="false"/>
+				</td>
+			</tr>
+			<tr>
 				<td>E-mail:</td>
 				<td>
 					<input id="email" type="text" name="email" value="${user?.email}" title="email" spellcheck="false"/>
 				</td>
 			</tr>
 			<tr>
-				<td>Zip Code:</td>
+				<td>Zip code:</td>
 				<td>
 					<input id="zipCode" type="text" name="zipCode" value="${user?.zipCode}" title="zipCode" spellcheck="false"/>
 				</td>
 			</tr>
+			<!-- 
+			<tr>
+				<td>Delivery Time:</td>
+				<td>
+					<g:select name="deliveryTime" from="${deliveryTimes}" value=""/> ET
+				</td>
+			</tr>
+			-->
 			<tr>
 				<td colspan="2" align="center">
 					<g:submitButton name="signup" class="input-button" value="Sign Up"/>

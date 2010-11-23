@@ -7,10 +7,24 @@ import com.morningmail.services.FeedService
 import com.morningmail.services.PersonalFeedService
 import com.google.appengine.api.datastore.Text
 
-class EmailService {
-	public static final Interest TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
-	public static final Interest WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
-	public static final Interest GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
+import java.util.Calendar;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import org.springframework.beans.factory.InitializingBean
+import java.text.SimpleDateFormat
+
+class EmailService implements InitializingBean {
+	public static Interest TOP_NEWS
+	public static Interest WEATHER
+	public static Interest GOOGLE_CAL
+	
+	public static final String SUBJECT_BEGIN = "MorningMail: "
 	
 	public static final String getPlainTextHeader() {
 		String header = new String()
@@ -22,6 +36,12 @@ class EmailService {
 		String footer = new String()
 		footer = "\n Thanks!"
 		return footer
+	}
+	
+	void afterPropertiesSet() {
+		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
+		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
+		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
 	}
 	
 	PersonalFeedService googleWeatherService
@@ -82,7 +102,35 @@ class EmailService {
 		}
 	}
 	
-	public void send(User u) {
+	public void send(Email email) {
+		Properties props = new Properties();
+		Session session = Session.getDefaultInstance(props, null);
+
+		String msgBody = email.contents.getValue()
 		
+		Date now = Calendar.getInstance().getTime()
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d")
+		String date = dateFormatter.format(now)
+		
+		String subject = SUBJECT_BEGIN + date
+		
+		try {
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
+			msg.addRecipient(Message.RecipientType.TO,
+							 new InternetAddress(email.user.email, email.user.name));
+			msg.setSubject(subject);
+			msg.setText(msgBody)
+			Transport.send(msg);
+			
+			//now mark it sent
+			email.status = Email.STATUS_SENT
+			email.deliveryDate = msg.getSentDate()
+			
+		} catch (AddressException e) {
+			log.error(e)
+		} catch (MessagingException e) {
+			log.error(e)
+		}
 	}
 }

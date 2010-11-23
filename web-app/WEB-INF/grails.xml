@@ -8,16 +8,22 @@
     <resource>resources</resource>
     <resource>UrlMappings</resource>
     <resource>com.morningmail.controller.AnotherController</resource>
+    <resource>com.morningmail.controller.BatchEmailController</resource>
+    <resource>com.morningmail.controller.EmailController</resource>
     <resource>com.morningmail.controller.FetchFeedsController</resource>
     <resource>com.morningmail.controller.SignupController</resource>
     <resource>com.morningmail.controller.TestController</resource>
     <resource>com.morningmail.controller.YahooNewsFeedController</resource>
+    <resource>com.morningmail.domain.Email</resource>
     <resource>com.morningmail.domain.Feed</resource>
+    <resource>com.morningmail.domain.Interest</resource>
     <resource>com.morningmail.domain.OAuthToken</resource>
     <resource>com.morningmail.domain.PersonalFeed</resource>
     <resource>com.morningmail.domain.User</resource>
+    <resource>com.morningmail.services.EmailService</resource>
     <resource>com.morningmail.services.FetchFeedsService</resource>
     <resource>com.morningmail.services.GoogleCalendarService</resource>
+    <resource>com.morningmail.services.GoogleWeatherService</resource>
     <resource>com.morningmail.services.YahooNewsFeedService</resource>
   </resources>
   <plugins>

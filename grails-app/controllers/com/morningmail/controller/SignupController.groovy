@@ -4,8 +4,16 @@ import com.morningmail.domain.*;
 import com.morningmail.services.*;
 class SignupController {
 	static allowedMethods = [completeGoogAuth: ["POST", "GET"]]
-//	static final List<String> deliveryTimes = new ArrayList<String>()[
-//		"8:30 AM","8:45 AM","9:00 AM","9:15 AM"]
+	
+	static List<String> deliveryTimes = new ArrayList<String>();
+	static {
+		deliveryTimes.add("7:00 AM")
+		deliveryTimes.add("7:30 AM")
+		deliveryTimes.add("8:00 AM")
+		deliveryTimes.add("8:30 AM")
+		deliveryTimes.add("9:00 AM")
+		deliveryTimes.add("9:30 AM")
+	}
 	
 	def googleCalendarService
 	
@@ -14,8 +22,8 @@ class SignupController {
 	 */
 	def index = {
 		//if we don't have an email param send it back
-		if (!params.email) {
-			render(view:'index', model:[user:null])
+		if (!params.email || !"tufts".equals(params.inviteSecret)) {
+			render(view:'index', model:[user:null, deliveryTimes:deliveryTimes])
 			return
 		}
 		
@@ -29,13 +37,17 @@ class SignupController {
 		user.email = params.email
 		user.zipCode = params.zipCode
 		
+//		//set delivery time
+//		Date theDate = User.BASE_DATE + " " + params.deliveryTime
+//		user.desiredDeliveryTime 
+		
 		if (user.validate()) {
 			if (!user.id) 
 				user.save()
 			session.userEmail = user.email
 			redirect(action:'personalize', model:[user:user])
 		} else {
-			render(view:'index', model:[user:user])
+			render(view:'index', model:[user:user, deliveryTimes:deliveryTimes])
 			return
 		}	
 	}

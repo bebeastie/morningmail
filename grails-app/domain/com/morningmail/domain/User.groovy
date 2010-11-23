@@ -1,7 +1,7 @@
 package com.morningmail.domain
 
 
-
+import java.text.SimpleDateFormat;
 import javax.persistence.*;
 import com.google.appengine.api.datastore.Key;
 import java.util.Set;
@@ -9,6 +9,8 @@ import java.util.Set;
 @Entity
 class User implements Serializable {
 
+	public static final Date DELIVERY_BASE_DATE =  new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z").parse("11/22/2010 00:00:00 -0500")
+	
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Key id
@@ -17,10 +19,13 @@ class User implements Serializable {
 	String email
 	
 	@Basic
+	String name
+	
+	@Basic
 	String zipCode
 	
 	@Basic
-	Date desiredDeliveryTime
+	Date deliveryTime
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();

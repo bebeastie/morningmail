@@ -31,13 +31,20 @@ class YahooNewsFeedService implements FeedService{
 			Collection items = rss.getChannel().getItems();
 			
 			String html = ""
-			String plainText = "NEWS\n\n"
+			String plainText = "NEWS\n"
 			
 			if(items != null && !items.isEmpty()) {
 				//Iterate over our main elements. Should have one for each article		
 				for (Item item : items) {
 					//html
-					html+="<h3>"+item.getTitle()+"</h3>";
+					String title = item.getTitle()
+					title = title.replaceAll("\\n","");
+					title = title.replaceAll("\\t","");
+					title = title.replaceAll("\\(AP\\)","");
+					title = title.replaceAll("\\(Reuters\\)","");
+					title = title.trim()
+					
+					html+="<h3>"+title+"</h3>";
 					Document doc = Jsoup.parse(item.getDescription().getText());
 					Element img = doc.select("img").first();
 					if (img) {
@@ -55,7 +62,7 @@ class YahooNewsFeedService implements FeedService{
 					html+="<br/>"
 					
 					//plainText
-					plainText += item.getTitle() 
+					plainText += title 
 					plainText += "\n"
 					plainText += doc.text() 
 					plainText += "\n\n"
