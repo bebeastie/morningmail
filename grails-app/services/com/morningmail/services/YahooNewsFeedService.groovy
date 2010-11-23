@@ -19,6 +19,7 @@ import org.jsoup.nodes.Element
 class YahooNewsFeedService implements FeedService{
 
 	private static final String FEED_URL = "http://rss.news.yahoo.com/rss/topstories"
+	private static final Integer NUMBER_STORIES = 5
 	
 	def entityManagerFactory
 	EntityManager em
@@ -33,9 +34,14 @@ class YahooNewsFeedService implements FeedService{
 			String html = ""
 			String plainText = "NEWS\n"
 			
+			int storyCount = 0;
+			
 			if(items != null && !items.isEmpty()) {
 				//Iterate over our main elements. Should have one for each article		
 				for (Item item : items) {
+					if (storyCount > NUMBER_STORIES) 
+						break
+						
 					//html
 					String title = item.getTitle()
 					title = title.replaceAll("\\n","");
@@ -66,9 +72,11 @@ class YahooNewsFeedService implements FeedService{
 					plainText += "\n"
 					plainText += doc.text() 
 					plainText += "\n\n"
+					storyCount++
 				}
 			}
-		
+			plainText = plainText.trim()
+			
 			Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS);
 			
 			if (!feed) { 

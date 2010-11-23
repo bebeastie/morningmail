@@ -24,18 +24,26 @@ class EmailService implements InitializingBean {
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
 	
-	public static final String SUBJECT_BEGIN = "MorningMail: "
+	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
 	public static final String getPlainTextHeader() {
 		String header = new String()
-		header = "Good Morning!\n"
+		header = "MorningMail - "
 		return header
 	}
 	
 	public static final String getPlainTextFooter() {
 		String footer = new String()
-		footer = "\n Thanks!"
+		footer = "Thanks,\nMorningMail"
 		return footer
+	}
+	
+	
+	private static String getTodaysDate() {
+		Date now = Calendar.getInstance().getTime()
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d")
+		dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT-5"))
+		return dateFormatter.format(now)
 	}
 	
 	void afterPropertiesSet() {
@@ -63,8 +71,9 @@ class EmailService implements InitializingBean {
 	
 	public Email render(User u) {
 		try {
+			
 			StringBuffer contents = new StringBuffer()
-			contents.append(getPlainTextHeader())
+			contents.append(getPlainTextHeader() + getTodaysDate() + "\n\n")
 			
 			if (u.interests.contains(WEATHER.id)) {
 				contents.append(googleWeatherService.getPlainText(u)) 
@@ -86,7 +95,7 @@ class EmailService implements InitializingBean {
 			//now time to save it
 			Email email = new Email()
 		
-			email.contents = new Text(contents.toString())
+			email.contents = new Text(contents.toString().trim())
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
 		
@@ -107,12 +116,8 @@ class EmailService implements InitializingBean {
 		Session session = Session.getDefaultInstance(props, null);
 
 		String msgBody = email.contents.getValue()
-		
-		Date now = Calendar.getInstance().getTime()
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d")
-		String date = dateFormatter.format(now)
-		
-		String subject = SUBJECT_BEGIN + date
+			
+		String subject = SUBJECT_BEGIN + getTodaysDate()
 		
 		try {
 			Message msg = new MimeMessage(session);
