@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.Text
 @Entity
 class Email implements Serializable {
     public static final String STATUS_PENDING = "pending"
+	public static final String STATUS_QUEUED = "queued"
 	public static final String STATUS_SENT = "sent"
 	
 	@Id

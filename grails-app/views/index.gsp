@@ -87,6 +87,7 @@
             content you may choose. Below is a list of controllers that are currently deployed in this application,
             click on each to execute its default action:</p>
 
+			<!-- 
             <div id="controllerList" class="dialog">
                 <h2>Available Controllers:</h2>
                 <ul>
@@ -95,6 +96,7 @@
                     </g:each>
                 </ul>
             </div>
+             -->
         </div>
     </body>
 </html>

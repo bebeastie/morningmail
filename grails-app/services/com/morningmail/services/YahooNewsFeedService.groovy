@@ -103,4 +103,9 @@ class YahooNewsFeedService implements FeedService{
 		Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS)
 		return feed.plainText.getValue()
 	}
+	
+	public String getShortPlainText() {
+		Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS)
+		return feed.plainText.toString();
+	}
 }

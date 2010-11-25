@@ -39,4 +39,8 @@ class EmailController {
 		
 		render(view:'index', model:[returnValue:"fetchAndRenderAsync Complete"])
 	}
+	
+	def keepAlive = {
+		render(view:"index", model:[returnValue:"Keep Alive"])
+	}
 }

@@ -10,6 +10,14 @@ class BatchEmailController {
 
 	def batchEmailService
 	
+	def index = {
+		Queue queue = QueueFactory.getDefaultQueue()
+		queue.add(url("/batchEmail/prepare/"))
+		queue.add(url("/batchEmail/send/"))
+		
+		render(view:'index', model:[returnValue:"Batch prepare and send complete."])
+	}
+	
 	def prepare = {
 		List<String> userKeys = batchEmailService.getUsersToRender()
 		
@@ -38,5 +46,9 @@ class BatchEmailController {
 		log.info(summary)
 		
 		render(view:'index', model:[returnValue:summary])
+	}
+	
+	def keepAlive = {
+		render(view:"index", model:[returnValue:"Keep Alive"])
 	}
 }

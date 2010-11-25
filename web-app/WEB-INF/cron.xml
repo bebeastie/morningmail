@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/globalFeed</url>
+    <description>Download global feeds every 15 minutes</description>
+    <schedule>every 15 minutes synchronized</schedule>
+  </cron>
+  <cron>
+    <url>/batchEmail</url>
+    <description>Render, stage and send emails every 5 minutes</description>
+    <schedule>every 5 minutes</schedule>
+  </cron>
+  <cron>
+    <url>/batchEmail/keepAlive</url>
+    <description>Batch Email Keep-alive</description>
+    <schedule>every 1 minutes</schedule>
+  </cron>
+  <cron>
+    <url>/email/keepAlive</url>
+    <description>Email Keep-alive</description>
+    <schedule>every 1 minutes</schedule>
+  </cron>
+</cronentries>

@@ -38,7 +38,7 @@ class BatchEmailService {
 			 " and u.deliveryTime <= :upperDate")
 		q.setParameter("lowerDate", lowerDate);
 		q.setParameter("upperDate", upperDate);
-		
+		q.setMaxResults(75)
 		
 		//GAE datastore doesn't support comparisons against two operators
 		//so we need to programmatically remove users that 
@@ -68,7 +68,7 @@ class BatchEmailService {
 		
 		Query q = em.createQuery("select e from Email e where e.status = :status")
 		q.setParameter("status", Email.STATUS_PENDING)
-		q.setMaxResults(1000)
+		q.setMaxResults(75)
 		
 		List emailKeys = new ArrayList<String>()
 		

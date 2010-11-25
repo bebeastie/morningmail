@@ -138,9 +138,9 @@ class EmailService implements InitializingBean {
 			email.deliveryDate = msg.getSentDate()
 			
 		} catch (AddressException e) {
-			log.error(e)
+			log.error("Problems sending email $email.id ", e)
 		} catch (MessagingException e) {
-			log.error(e)
+			log.error("Problems sending email $email.id ", e)
 		}
 	}
 }
