@@ -34,7 +34,8 @@
 			<tr>
 				<td>Delivery Time:</td>
 				<td>
-					<g:select name="deliveryTime" from="${deliveryTimes}" value="${user?.localDeliveryTime}"/> 
+					<input id="deliveryTime" type="text" name="deliveryTime" value="${user?.localDeliveryTime}" title="deliveryTime" spellcheck="false"/>
+					<!-- <g:select name="deliveryTime" from="${deliveryTimes}" value="${user?.localDeliveryTime}"/> -->
 					<g:select name="timeZone" from="${timeZones}" value="${user?.timeZone}"/> 
 				</td>
 			</tr>

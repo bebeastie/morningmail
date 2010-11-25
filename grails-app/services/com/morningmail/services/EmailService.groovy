@@ -102,7 +102,12 @@ class EmailService implements InitializingBean {
 			//need to set deliverydate
 				
 			email.user = u
+			
+			//add a reference to the user
 			u.emails.add(email)
+			//mark the user as well
+			u.lastRenderedDate = Calendar.getInstance().getTime()
+			
 			email.save()
 
 			return email

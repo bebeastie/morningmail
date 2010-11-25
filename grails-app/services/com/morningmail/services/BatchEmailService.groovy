@@ -7,6 +7,7 @@ import java.util.Date
 import java.util.Calendar
 import com.morningmail.utils.DateUtils
 import com.morningmail.domain.User;
+import com.google.appengine.api.datastore.KeyFactory
 
 class BatchEmailService {
 	private static final Long LOWER_DATE_BOUND = 300000 //5 min
@@ -22,7 +23,7 @@ class BatchEmailService {
 	 * email prepared within the past 5 hours.
 	 * @return
 	 */
-	public List<User> getUsersToRender() {
+	public List<String> getUsersToRender() {
 		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
 		
 		Date now = Calendar.getInstance().getTime();
@@ -42,14 +43,16 @@ class BatchEmailService {
 		//so we need to programmatically remove users that 
 		//we've rendered recently
 		try {
-			List<User> results = q.getResultList()
-			for (Iterator<User> it = results.iterator(); it.hasNext(); ) {
+			List<User> dbResults = q.getResultList()
+			List<String> validKeys = new ArrayList<String>()
+			
+			for (Iterator<User> it = dbResults.iterator(); it.hasNext(); ) {
 				User u = it.next()
 				
-				if (u.lastRenderedDate >= lastRenderedDate)
-					it.remove()
+				if (u.lastRenderedDate < lastRenderedDate)
+					validKeys.add(KeyFactory.keyToString(u.id))
 			}
-			return results
+			return validKeys
 		} catch (NoResultException e) {
 			return new ArrayList<User>();
 		}
