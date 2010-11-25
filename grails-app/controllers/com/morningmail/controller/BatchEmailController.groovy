@@ -11,29 +11,32 @@ class BatchEmailController {
 	def batchEmailService
 	
 	def prepare = {
-		
 		List<String> userKeys = batchEmailService.getUsersToRender()
 		
-		
-		String prepareUsers = "Users:<br/>"
-		for (String key : userKeys) {
-			prepareUsers+= "User: " + key + "<br/>"
+		for (String key: userKeys) {
+			log.info("Prepare and render email for user: " + key)
 			Queue queue = QueueFactory.getDefaultQueue()
 			queue.add(url("/email/fetchAndRenderAsync/" + key))
 		}
 		
-		render(view:'index', model:[returnValue:prepareUsers])
+		String summary = "Queued up rendering of " + userKeys.size() + " emails"
+		log.info(summary)
+		
+		render(view:'index', model:[returnValue:summary])
 	}
 	
 	def send = {
-		def emails = Email.findByStatus(Email.STATUS_PENDING)
-		
-		if (emails) {
+		List<String> emailKeys = batchEmailService.getEmailsToSend()
+
+		for(String key: emailKeys) {
+			log.info("Send email with ID: " + key)
 			Queue queue = QueueFactory.getQueue("mail-queue")
-			
-			for(Email email: emails) {
-				queue.add(url("/email/send/$email.id"))
-			}
+			queue.add(url("/email/send/" + key))
 		}
+		
+		String summary = "Queued up delivery of " + emailKeys.size() + " emails"
+		log.info(summary)
+		
+		render(view:'index', model:[returnValue:summary])
 	}
 }

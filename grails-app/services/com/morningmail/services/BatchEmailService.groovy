@@ -7,6 +7,7 @@ import java.util.Date
 import java.util.Calendar
 import com.morningmail.utils.DateUtils
 import com.morningmail.domain.User;
+import com.morningmail.domain.Email
 import com.google.appengine.api.datastore.KeyFactory
 
 class BatchEmailService {
@@ -42,9 +43,9 @@ class BatchEmailService {
 		//GAE datastore doesn't support comparisons against two operators
 		//so we need to programmatically remove users that 
 		//we've rendered recently
+		List<String> validKeys = new ArrayList<String>()
 		try {
 			List<User> dbResults = q.getResultList()
-			List<String> validKeys = new ArrayList<String>()
 			
 			for (Iterator<User> it = dbResults.iterator(); it.hasNext(); ) {
 				User u = it.next()
@@ -54,7 +55,33 @@ class BatchEmailService {
 			}
 			return validKeys
 		} catch (NoResultException e) {
-			return new ArrayList<User>();
+			return validKeys;
 		}
+	}
+	
+	/**
+	 * Returns a list of keys for all pending emails
+	 * @return
+	 */
+	public List<String> getEmailsToSend() {
+		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
+		
+		Query q = em.createQuery("select e from Email e where e.status = :status")
+		q.setParameter("status", Email.STATUS_PENDING)
+		q.setMaxResults(1000)
+		
+		List emailKeys = new ArrayList<String>()
+		
+		try {
+			List<Email> emails = q.getResultList()
+			
+			for (Email e: emails) {
+				emailKeys.add(KeyFactory.keyToString(e.id))
+				e.status = Email.STATUS_QUEUED
+			}
+		} catch (NoResultException e) {
+			return emailKeys
+		}
+		return emailKeys
 	}
 }
