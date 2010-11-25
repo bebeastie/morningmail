@@ -1,1 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<queue-entries>
+  <queue>
+    <name>fetch-queue</name>
+    <rate>5/s</rate>
+  </queue>
+  <queue>
+    <name>render-queue</name>
+    <rate>5/s</rate>
+  </queue>
+  <queue>
+    <name>mail-queue</name>
+    <rate>5/s</rate>
+  </queue>
+</queue-entries>

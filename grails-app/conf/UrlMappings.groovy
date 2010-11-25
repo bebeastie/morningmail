@@ -22,6 +22,11 @@ class UrlMappings {
 			action = "send"
 		 }
 		
+		"/email/fetchAndRenderAsync/$id" {
+			controller = "email"
+			action = "fetchAndRenderAsync"
+		 }
+		
 		"/"(view:"/index")
 		"500"(view:'/error')
 	}

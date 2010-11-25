@@ -35,9 +35,11 @@ class SignupController {
 		if (params.email)
 			user = User.findByEmail(params.email)
 	
-		if (!user) 
+		if (!user) {
 			user = new User()
-			
+			user.lastRenderedDate = new Date(0);
+		}
+		
 		user.name = params.name
 		user.email = params.email
 		user.zipCode = params.zipCode

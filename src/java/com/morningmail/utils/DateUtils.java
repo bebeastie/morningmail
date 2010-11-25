@@ -14,7 +14,8 @@ public class DateUtils {
 	private static final Integer BASE_MONTH = 0;
 	private static final Integer BASE_DAY = 1;
 	private static final Integer BASE_YEAR = 1970;
-	private static final String BASE_DATE = new String("01/01/1970");
+	private static final String BASE_DATE_STRING = new String("01/01/1970");
+	public static final Date BASE_DATE = new Date(0);
 	
 	public static final List<String> TIME_ZONES = new ArrayList<String>();
 	
@@ -36,8 +37,7 @@ public class DateUtils {
 	public static Date getNormalizedDeliveryTime(String time, String timeZone) throws ParseException {
 		DateFormat dFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a z");
 
-		Date date = dFormat.parse(BASE_DATE + " " + time + " " + timeZone);
-		dFormat.setTimeZone(TimeZone.getTimeZone("EST"));
+		Date date = dFormat.parse(BASE_DATE_STRING + " " + time + " " + timeZone);
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -67,41 +67,30 @@ public class DateUtils {
 		return offsetTimeZone;
 	}
 	
+	public static Date getNormalizedTime(Date now, Long offset) {
+		//calculate the offset
+		Date offsetDate = new Date(now.getTime() + offset);
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+		cal.setTime(offsetDate);
+		
+		//now make sure to reset other fields
+		cal.set(Calendar.DAY_OF_MONTH, BASE_DAY);
+		cal.set(Calendar.MONTH, BASE_MONTH);
+		cal.set(Calendar.YEAR, BASE_YEAR);	
+		
+		return cal.getTime();
+	}
+	
 	public static void main(String[] args) {
-		DateFormat dFormat = new SimpleDateFormat("MM/dd/yyyy h:mm a z");
-		String BASE_DATE1 = new String("01/01/1970");
+		Calendar cal = Calendar.getInstance();
 		
-		String time1 = new String("7:00 AM +0800");
+		Date now = cal.getTime();
 		
-		try {
-			Date date1 = dFormat.parse(BASE_DATE1 + " " + time1);
-			
-			dFormat.setTimeZone(TimeZone.getTimeZone("EST"));
-			System.out.println("date1, time:" + date1.getTime());
-			System.out.println("date1, time:" + date1.toString());
-			System.out.println("date1, format:" + dFormat.format(date1).toString());
-			
-			Calendar cal2 = Calendar.getInstance();
-			cal2.setTimeZone(TimeZone.getTimeZone("GMT"));
-			cal2.setTime(date1);	
-			
-			//now make sure we didnt roll any other fields
-			cal2.set(Calendar.DAY_OF_MONTH, 1);
-			cal2.set(Calendar.MONTH, 0);
-			cal2.set(Calendar.YEAR, 1970);
-			
-			Date date2 = cal2.getTime();
-			System.out.println("date2, time:" + date2.getTime());
-			System.out.println("date2, time:" + date2.toString());
-			System.out.println("date2, format:" + dFormat.format(date2).toString());
-			
-			
-		} catch (ParseException e) {
-			System.out.println("problems with date1");
-			e.printStackTrace();
-		}
+		Date offsetDate = getNormalizedTime(now, new Long(-300000));
 		
-		
+		System.out.println(offsetDate);
 	}
 	
 	

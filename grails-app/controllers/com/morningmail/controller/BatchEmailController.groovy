@@ -6,41 +6,38 @@ import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
 
+
 class BatchEmailController {
 
-	def prepare = {
-		Date now = Calendar.getInstance()
-		
-		def users = User.list()
-		
-		if (users) {		
-			Queue queue = QueueFactory.getDefaultQueue()
-
-			for(User user: users) {
-				queue.add(url("/email/fetch/$user.id"))
-			}
-		}
-	}
+	def batchEmailService
 	
-	def render = {
-		Date now = Calendar.getInstance()
+	def prepare = {
 		
-		def users = User.list()
+		ArrayList<User> users = batchEmailService.getUsersToRender()
 		
-		if (users) {
-			Queue queue = QueueFactory.getDefaultQueue()
-
-			for(User user: users) {
-				queue.add(url("/email/render/$user.id"))
-			}
+		String renderedUsers = "Users:<br/>"
+		for (User u: users) {
+			renderedUsers+=u+"<br/>"
 		}
+		
+		render(view:'index', model:[returnValue:renderedUsers])
+		
+//		def users = User.list()
+//		
+//		if (users) {		
+//			Queue queue = QueueFactory.getDefaultQueue()
+//
+//			for(User user: users) {
+//				queue.add(url("/email/fetchAndRenderAsync/$user.id"))
+//			}
+//		}
 	}
 	
 	def send = {
 		def emails = Email.findByStatus(Email.STATUS_PENDING)
 		
 		if (emails) {
-			Queue queue = QueueFactory.getDefaultQueue()
+			Queue queue = QueueFactory.getQueue("mail-queue")
 			
 			for(Email email: emails) {
 				queue.add(url("/email/send/$email.id"))

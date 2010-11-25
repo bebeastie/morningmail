@@ -42,6 +42,12 @@ class User implements Serializable {
 	@Basic
 	String localDeliveryTime
 	
+	/** 
+	 * The last time we rendered an email to the database
+	 */
+	@Basic
+	Date lastRenderedDate
+	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();
 
