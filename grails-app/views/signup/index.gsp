@@ -7,9 +7,9 @@
 		<g:form controller="signup" action="index">
 		<table>
 			<tr>
-				<td>Invite secret:</td>
+				<td>Invite code:</td>
 				<td>
-					<input id="inviteSecret" type="text" name="inviteSecret" value="" title="inviteSecret" spellcheck="false"/>
+					<input id="inviteCode" type="text" name="inviteCode" value="" title="inviteCode" spellcheck="false"/>
 				</td>
 			</tr>
 			<tr>
@@ -30,14 +30,15 @@
 					<input id="zipCode" type="text" name="zipCode" value="${user?.zipCode}" title="zipCode" spellcheck="false"/>
 				</td>
 			</tr>
-			<!-- 
+			 
 			<tr>
 				<td>Delivery Time:</td>
 				<td>
-					<g:select name="deliveryTime" from="${deliveryTimes}" value=""/> ET
+					<g:select name="deliveryTime" from="${deliveryTimes}" value="${user?.localDeliveryTime}"/> 
+					<g:select name="timeZone" from="${timeZones}" value="${user?.timeZone}"/> 
 				</td>
 			</tr>
-			-->
+			
 			<tr>
 				<td colspan="2" align="center">
 					<g:submitButton name="signup" class="input-button" value="Sign Up"/>

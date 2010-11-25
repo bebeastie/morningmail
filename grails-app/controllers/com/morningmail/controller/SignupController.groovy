@@ -2,18 +2,27 @@ package com.morningmail.controller
 
 import com.morningmail.domain.*;
 import com.morningmail.services.*;
+import com.morningmail.utils.DateUtils;
+import java.text.ParseException;
+
 class SignupController {
 	static allowedMethods = [completeGoogAuth: ["POST", "GET"]]
 	
 	static List<String> deliveryTimes = new ArrayList<String>();
 	static {
+		deliveryTimes.add("5:30 AM")
+		deliveryTimes.add("6:00 AM")
+		deliveryTimes.add("6:30 AM")
 		deliveryTimes.add("7:00 AM")
 		deliveryTimes.add("7:30 AM")
 		deliveryTimes.add("8:00 AM")
 		deliveryTimes.add("8:30 AM")
 		deliveryTimes.add("9:00 AM")
 		deliveryTimes.add("9:30 AM")
+		deliveryTimes.add("10:00 AM")
+		deliveryTimes.add("10:30 AM")
 	}
+	
 	
 	def googleCalendarService
 	
@@ -21,33 +30,40 @@ class SignupController {
 	 * Called when we create a user
 	 */
 	def index = {
-		//if we don't have an email param send it back
-		if (!params.email || !"tufts".equals(params.inviteSecret)) {
-			render(view:'index', model:[user:null, deliveryTimes:deliveryTimes])
-			return
-		}
+		User user
 		
-		//see if we already have a user
-		User user = User.findByEmail(params.email)
-		
+		if (params.email)
+			user = User.findByEmail(params.email)
+	
 		if (!user) 
 			user = new User()
-		
-		
+			
+		user.name = params.name
 		user.email = params.email
 		user.zipCode = params.zipCode
+		user.localDeliveryTime = params.deliveryTime
+		user.timeZone = params.timeZone
 		
-//		//set delivery time
-//		Date theDate = User.BASE_DATE + " " + params.deliveryTime
-//		user.desiredDeliveryTime 
+		//@TODO this is just to set a default
+		if (!params.deliveryTime) {
+			user.localDeliveryTime = "8:00 AM"
+			user.timeZone = "Eastern"
+		}
 		
-		if (user.validate()) {
+		try {
+			user.deliveryTime = DateUtils.
+				getNormalizedDeliveryTime(user.localDeliveryTime, DateUtils.getOffsetTimeZone(user.timeZone))
+		} catch (ParseException e) {
+			log.error("Invalid deliveryTime", e);
+		}
+		
+		if (user.validate() && "tufts".equals(params.inviteCode)) {
 			if (!user.id) 
 				user.save()
 			session.userEmail = user.email
 			redirect(action:'personalize', model:[user:user])
 		} else {
-			render(view:'index', model:[user:user, deliveryTimes:deliveryTimes])
+			render(view:'index', model:[user:user, deliveryTimes:deliveryTimes, timeZones:DateUtils.TIME_ZONES])
 			return
 		}	
 	}

@@ -65,7 +65,7 @@ class EmailService implements InitializingBean {
 				googleWeatherService.fetch(u)
 			
 		} catch(Exception e) {
-			log.error("Can't fetch personal feeds for user $u \n" + e)
+			log.error("Can't fetch personal feeds for user $u \n", e)
 		}	
 	}
 	
@@ -107,7 +107,7 @@ class EmailService implements InitializingBean {
 
 			return email
 		} catch (Exception e) {
-			log.error("Can't render email for user $u \n" + e)
+			log.error("Can't render email for user $u", e)
 		}
 	}
 	

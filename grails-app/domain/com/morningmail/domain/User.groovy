@@ -24,8 +24,23 @@ class User implements Serializable {
 	@Basic
 	String zipCode
 	
+	/**
+	 * The normalized delivery time, stored as time surpassed since the
+	 * epoch (Jan 1 1970)
+	 */
 	@Basic
 	Date deliveryTime
+	
+	@Basic
+	String timeZone
+	
+	/** 
+	 * A string representation of the desired delivery time stored as
+	 * backup (in case we mess up the normalized time somehow) and
+	 * to assist with loading the registration form. 	
+	 */
+	@Basic
+	String localDeliveryTime
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();
