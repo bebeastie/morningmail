@@ -7,6 +7,13 @@
 		<g:form controller="signup" action="index">
 		<table>
 			<tr>
+				<td colspan="2">
+					<g:hasErrors bean="${user}">
+						<g:renderErrors bean="${user}" as="list" />
+					</g:hasErrors>
+				</td>
+			</tr>
+			<tr>
 				<td>Invite code:</td>
 				<td>
 					<input id="inviteCode" type="text" name="inviteCode" value="" title="inviteCode" spellcheck="false"/>

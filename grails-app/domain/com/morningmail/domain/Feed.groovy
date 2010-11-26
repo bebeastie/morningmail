@@ -9,6 +9,8 @@ import com.google.appengine.api.datastore.Text
 @Entity
 class Feed implements Serializable {
 	public static final String TYPE_YAHOO_NEWS = "yahoo_news"
+	public static final String TYPE_DICTIONARY_DOT_COM_WOTD = "dictionary_dot_com_wotd"
+	
 	
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

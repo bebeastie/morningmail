@@ -23,6 +23,7 @@ class EmailService implements InitializingBean {
 	public static Interest TOP_NEWS
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
+	public static Interest WOTD
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
@@ -50,11 +51,13 @@ class EmailService implements InitializingBean {
 		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
 		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
 		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
+		WOTD = Interest.findByType(Interest.TYPE_WOTD)
 	}
 	
 	PersonalFeedService googleWeatherService
 	PersonalFeedService googleCalendarService
 	FeedService yahooNewsFeedService
+	FeedService dictionaryWotdService
 	
 	public void fetchPersonalFeeds(User u){
 		try {
@@ -77,6 +80,11 @@ class EmailService implements InitializingBean {
 			
 			if (u.interests.contains(WEATHER.id)) {
 				contents.append(googleWeatherService.getPlainText(u)) 
+				contents.append("\n\n")
+			}
+			
+			if (u.interests.contains(WOTD.id)) {
+				contents.append(dictionaryWotdService.getPlainText())
 				contents.append("\n\n")
 			}
 			

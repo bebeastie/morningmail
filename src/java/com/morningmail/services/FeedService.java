@@ -8,4 +8,6 @@ public interface FeedService {
 	
 	public String getPlainText();
 	
+	public String getShortPlainText();
+	
 }

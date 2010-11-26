@@ -86,10 +86,13 @@ class SignupController {
 			user.interests.clear()
 			if (params.get(Interest.TYPE_WEATHER))
 				user.interests.add(Interest.findByType(Interest.TYPE_WEATHER).id)
-			
+
+			if (params.get(Interest.TYPE_WOTD))
+				user.interests.add(Interest.findByType(Interest.TYPE_WOTD).id)
+
 			if (params.get(Interest.TYPE_TOP_NEWS)) 
 				user.interests.add(Interest.findByType(Interest.TYPE_TOP_NEWS).id)
-			
+							
 			if (params.get(Interest.TYPE_GOOGLE_CAL))
 				user.interests.add(Interest.findByType(Interest.TYPE_GOOGLE_CAL).id)
 	

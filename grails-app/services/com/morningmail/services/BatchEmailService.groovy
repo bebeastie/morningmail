@@ -15,6 +15,8 @@ class BatchEmailService {
 	private static final Long UPPER_DATE_BOUND = 300000 //5 min
 	private static final Long PREVIOUS_PERIOD = 18000000  //5 hours
 	
+	static transactional = false
+	
 	def entityManagerFactory
 	EntityManager em
 	
@@ -67,6 +69,7 @@ class BatchEmailService {
 		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
 		
 		Query q = em.createQuery("select e from Email e where e.status = :status")
+		
 		q.setParameter("status", Email.STATUS_PENDING)
 		q.setMaxResults(75)
 		

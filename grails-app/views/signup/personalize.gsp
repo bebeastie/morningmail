@@ -5,7 +5,7 @@
 Interest weather = Interest.findByType(Interest.TYPE_WEATHER)
 Interest topNews = Interest.findByType(Interest.TYPE_TOP_NEWS)
 Interest googleCal = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
-
+Interest wotd = Interest.findByType(Interest.TYPE_WOTD)
 
  %>
 <html>
@@ -25,6 +25,10 @@ Interest googleCal = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
 		<tr>
 			<td>${topNews.displayName}</td>
 			<td><g:checkBox name="${topNews.type}" value="${user.interests.contains(topNews.id)}" /></td>
+		</tr>
+		<tr>
+			<td>${wotd.displayName}</td>
+			<td><g:checkBox name="${wotd.type}" value="${user.interests.contains(wotd.id)}" /></td>
 		</tr>
 		<tr>
 			<td>${googleCal.displayName}</td>

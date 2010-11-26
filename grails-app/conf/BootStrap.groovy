@@ -18,6 +18,12 @@ class BootStrap {
 			googleCal.type = Interest.TYPE_GOOGLE_CAL
 			googleCal.displayName = "Google Calendar"
 			googleCal.save()
+			
+			Interest wotd = new Interest()
+			wotd.type = Interest.TYPE_WOTD
+			wotd.displayName = "Word of the Day"
+			wotd.save()
+			
 		}
     }
     def destroy = {
