@@ -15,23 +15,19 @@ import org.jsoup.nodes.Document
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements
 import org.jsoup.nodes.Element
+import org.springframework.beans.factory.InitializingBean
 
-class DictionaryWotdService implements FeedService{
-
-	private static final String FEED_URL = "http://dictionary.reference.com/wordoftheday/wotd.rss"
+class DictionaryWotdService implements FeedService {
 	
-	def entityManagerFactory
-	EntityManager em
-	
-	public void fetch() {
+	public void fetch(Feed feed) {
 		try {
 			RssParser parser = RssParserFactory.createDefault();
-			Rss rss = parser.parse(new URL(FEED_URL));
+			Rss rss = parser.parse(new URL(feed.url));
 			
 			Collection items = rss.getChannel().getItems();
 			
-			String html = "<h3>WORD OF THE DAY</h3></br>"
-			String plainText = "WORD OF THE DAY\n"
+			String html = "<h3>" + feed.title + "</h3></br>"
+			String plainText = feed.title.toUpperCase() + "\n"
 					
 			if(items != null && !items.isEmpty()) {
 				Item item = items.iterator().next();
@@ -39,15 +35,7 @@ class DictionaryWotdService implements FeedService{
 				html+=item.getDescription();
 			}
 			plainText = plainText.trim()
-			
-			Feed feed = Feed.findByType(Feed.TYPE_DICTIONARY_DOT_COM_WOTD);
-			
-			if (!feed) { 
-				feed = new Feed()
-				feed.type = Feed.TYPE_DICTIONARY_DOT_COM_WOTD
-				feed.save()
-			}
-			
+						
 			feed.html = new Text(html)
 			feed.plainText = new Text(plainText)
 			
@@ -57,18 +45,12 @@ class DictionaryWotdService implements FeedService{
 		}
 	}
 	
-	public String getHtml() {
-		Feed feed = Feed.findByType(Feed.TYPE_DICTIONARY_DOT_COM_WOTD)
+	public String getHtml(Feed feed) {
 		return feed.html.getValue()
 	}
 	
-	public String getPlainText() {
-		Feed feed = Feed.findByType(Feed.TYPE_DICTIONARY_DOT_COM_WOTD)
+	public String getPlainText(Feed feed) {
 		return feed.plainText.getValue()
 	}
 	
-	public String getShortPlainText() {
-		Feed feed = Feed.findByType(Feed.TYPE_DICTIONARY_DOT_COM_WOTD)
-		return feed.plainText.toString();
-	}
 }

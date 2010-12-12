@@ -6,7 +6,7 @@ Interest weather = Interest.findByType(Interest.TYPE_WEATHER)
 Interest topNews = Interest.findByType(Interest.TYPE_TOP_NEWS)
 Interest googleCal = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
 Interest wotd = Interest.findByType(Interest.TYPE_WOTD)
-
+Interest techcrunch = Interest.findByType(Interest.TYPE_TECHCRUNCH)
  %>
 <html>
 	<head>
@@ -33,6 +33,10 @@ Interest wotd = Interest.findByType(Interest.TYPE_WOTD)
 		<tr>
 			<td>${googleCal.displayName}</td>
 			<td><g:checkBox name="${googleCal.type}" value="${user.interests.contains(googleCal.id)}" /></td>
+		</tr>
+		<tr>
+			<td>${techcrunch.displayName}</td>
+			<td><g:checkBox name="${techcrunch.type}" value="${user.interests.contains(techcrunch.id)}" /></td>
 		</tr>
 		<tr>
 		<td colspan="2" align="center"><g:actionSubmit value="Save" action="personalize" /></td>

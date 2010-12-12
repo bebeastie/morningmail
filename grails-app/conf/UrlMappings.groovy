@@ -27,6 +27,11 @@ class UrlMappings {
 			action = "fetchAndRenderAsync"
 		 }
 		
+		"/globalFeed/fetch/$id" {
+			controller = "globalFeed"
+			action = "fetch"
+		}
+		
 		"/"(view:"/index")
 		"500"(view:'/error')
 	}

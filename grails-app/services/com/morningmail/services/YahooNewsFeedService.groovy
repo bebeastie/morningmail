@@ -15,31 +15,27 @@ import org.jsoup.nodes.Document
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements
 import org.jsoup.nodes.Element
+import org.springframework.beans.factory.InitializingBean
 
-class YahooNewsFeedService implements FeedService{
-
-	private static final String FEED_URL = "http://rss.news.yahoo.com/rss/topstories"
-	private static final Integer NUMBER_STORIES = 5
+class YahooNewsFeedService implements FeedService {
 	
-	def entityManagerFactory
-	EntityManager em
-	
-	public void fetch() {
+	public void fetch(Feed feed) {
 		try {
+		
 			RssParser parser = RssParserFactory.createDefault();
-			Rss rss = parser.parse(new URL(FEED_URL));
+			Rss rss = parser.parse(new URL(feed.url));
 			
 			Collection items = rss.getChannel().getItems();
 			
-			String html = ""
-			String plainText = "NEWS\n"
+			String html = feed.title + "<br/>"
+			String plainText = feed.title.toUpperCase() + "\n"
 			
-			int storyCount = 0;
+			int storyCount = 1;
 			
 			if(items != null && !items.isEmpty()) {
 				//Iterate over our main elements. Should have one for each article		
 				for (Item item : items) {
-					if (storyCount > NUMBER_STORIES) 
+					if (storyCount > feed.maxStories) 
 						break
 						
 					//html
@@ -77,14 +73,7 @@ class YahooNewsFeedService implements FeedService{
 			}
 			plainText = plainText.trim()
 			
-			Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS);
-			
-			if (!feed) { 
-				feed = new Feed()
-				feed.type = Feed.TYPE_YAHOO_NEWS
-				feed.save()
-			}
-			
+		
 			feed.html = new Text(html)
 			feed.plainText = new Text(plainText)
 			
@@ -94,18 +83,11 @@ class YahooNewsFeedService implements FeedService{
 		}
 	}
 	
-	public String getHtml() {
-		Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS)
+	public String getHtml(Feed feed) {
 		return feed.html.getValue()
 	}
 	
-	public String getPlainText() {
-		Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS)
+	public String getPlainText(Feed feed) {
 		return feed.plainText.getValue()
-	}
-	
-	public String getShortPlainText() {
-		Feed feed = Feed.findByType(Feed.TYPE_YAHOO_NEWS)
-		return feed.plainText.toString();
 	}
 }

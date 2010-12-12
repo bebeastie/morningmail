@@ -46,7 +46,7 @@ class GoogleCalendarService implements InitializingBean, PersonalFeedService {
 		
 	}
 	
-	public static final String CALLBACK = "http://apponthebowery.appspot.com/signup/completeGoogleAuth"
+	public static final String CALLBACK = "http://apponthebowery.appspot.com/login/completeGoogleAuth"
 	
 	private static final String CONSUMER_KEY = "apponthebowery.appspot.com"
 	private static final String CONSUMER_SECRET = "4GyRDvv47fm9Kn3xhIhCxqxb"

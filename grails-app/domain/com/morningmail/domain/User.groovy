@@ -19,6 +19,9 @@ class User implements Serializable {
 	String email
 	
 	@Basic
+	String password
+	
+	@Basic
 	String name
 	
 	@Basic
@@ -52,7 +55,7 @@ class User implements Serializable {
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();
 
 	@Basic
-	Set<Key> interests;
+	List<Key> interests = new ArrayList<Key>();
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<PersonalFeed> pFeeds = new ArrayList<PersonalFeed>();

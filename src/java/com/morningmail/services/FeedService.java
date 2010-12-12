@@ -1,13 +1,13 @@
 package com.morningmail.services;
 
+import com.morningmail.domain.*;
+
 public interface FeedService {
 
-	public void fetch(); 
+	public void fetch(Feed feed); 
 	
-	public String getHtml();
+	public String getHtml(Feed feed);
 	
-	public String getPlainText();
-	
-	public String getShortPlainText();
+	public String getPlainText(Feed feed);
 	
 }

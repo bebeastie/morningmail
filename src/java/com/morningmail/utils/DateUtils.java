@@ -18,6 +18,7 @@ public class DateUtils {
 	public static final Date BASE_DATE = new Date(0);
 	
 	public static final List<String> TIME_ZONES = new ArrayList<String>();
+	public static final List<String> DELIVERY_TIMES = new ArrayList<String>();
 	
 	static {
 		TIME_ZONES.add("Eastern");
@@ -26,6 +27,20 @@ public class DateUtils {
 		TIME_ZONES.add("Pacific");
 	} 
 
+	
+	static {
+		DELIVERY_TIMES.add("5:30 AM");
+		DELIVERY_TIMES.add("6:00 AM");
+		DELIVERY_TIMES.add("6:30 AM");
+		DELIVERY_TIMES.add("7:00 AM");
+		DELIVERY_TIMES.add("7:30 AM");
+		DELIVERY_TIMES.add("8:00 AM");
+		DELIVERY_TIMES.add("8:30 AM");
+		DELIVERY_TIMES.add("9:00 AM");
+		DELIVERY_TIMES.add("9:30 AM");
+		DELIVERY_TIMES.add("10:00 AM");
+		DELIVERY_TIMES.add("10:30 AM");
+	}
 	
 	/**
 	 * Accepts a time and time zone (e.g. -0400) and returns a normalized date.
@@ -83,16 +98,11 @@ public class DateUtils {
 		return cal.getTime();
 	}
 	
-	public static void main(String[] args) {
+	public static boolean isWithin24Hours(Date date) {
 		Calendar cal = Calendar.getInstance();
-		
 		Date now = cal.getTime();
 		
-		Date offsetDate = getNormalizedTime(now, new Long(-300000));
-		
-		System.out.println(offsetDate);
+		return (now.getTime() - date.getTime()) > 86400000; 
 	}
-	
-	
 	
 }

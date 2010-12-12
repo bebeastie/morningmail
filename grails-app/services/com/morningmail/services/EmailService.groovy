@@ -3,6 +3,8 @@ package com.morningmail.services
 import com.morningmail.domain.Interest
 import com.morningmail.domain.User
 import com.morningmail.domain.Email
+import com.morningmail.domain.Feed
+import com.morningmail.domain.PersonalFeed;
 import com.morningmail.services.FeedService
 import com.morningmail.services.PersonalFeedService
 import com.google.appengine.api.datastore.Text
@@ -18,12 +20,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.InitializingBean
 import java.text.SimpleDateFormat
+import com.google.appengine.api.datastore.Key
 
 class EmailService implements InitializingBean {
-	public static Interest TOP_NEWS
+//	public static Interest TOP_NEWS
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
-	public static Interest WOTD
+//	public static Interest WOTD
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
@@ -48,16 +51,17 @@ class EmailService implements InitializingBean {
 	}
 	
 	void afterPropertiesSet() {
-		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
+//		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
 		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
 		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
-		WOTD = Interest.findByType(Interest.TYPE_WOTD)
+//		WOTD = Interest.findByType(Interest.TYPE_WOTD)
 	}
 	
 	PersonalFeedService googleWeatherService
 	PersonalFeedService googleCalendarService
-	FeedService yahooNewsFeedService
-	FeedService dictionaryWotdService
+//	FeedService yahooNewsFeedService
+//	FeedService dictionaryWotdService
+	FeedService globalFeedService
 	
 	public void fetchPersonalFeeds(User u){
 		try {
@@ -74,29 +78,46 @@ class EmailService implements InitializingBean {
 	
 	public Email render(User u) {
 		try {
-			
+		
 			StringBuffer contents = new StringBuffer()
 			contents.append(getPlainTextHeader() + getTodaysDate() + "\n\n")
 			
-			if (u.interests.contains(WEATHER.id)) {
-				contents.append(googleWeatherService.getPlainText(u)) 
-				contents.append("\n\n")
+			for (Key k: u.interests) {
+				Interest interest = Interest.findById(k)
+				
+				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
+					Feed feed = Feed.findById(interest.feedId)
+					contents.append(globalFeedService.getPlainText(feed))
+					contents.append("\n\n")
+				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
+					if (interest.feedId.equals(PersonalFeed.TYPE_GOOGLE_CAL)) {
+						contents.append(googleCalendarService.getPlainText(u))
+						contents.append("\n\n")
+					} else if (interest.feedId.equals(PersonalFeed.TYPE_WEATHER)) {
+						contents.append(googleWeatherService.getPlainText(u))
+						contents.append("\n\n")
+					}
+				}
 			}
-			
-			if (u.interests.contains(WOTD.id)) {
-				contents.append(dictionaryWotdService.getPlainText())
-				contents.append("\n\n")
-			}
-			
-			if (u.interests.contains(TOP_NEWS.id)) {
-				contents.append(yahooNewsFeedService.getPlainText())
-				contents.append("\n\n")
-			}
-			
-			if (u.interests.contains(GOOGLE_CAL.id)) {
-				contents.append(googleCalendarService.getPlainText(u))
-				contents.append("\n\n")
-			}
+//			if (u.interests.contains(WEATHER.id)) {
+//				contents.append(googleWeatherService.getPlainText(u)) 
+//				contents.append("\n\n")
+//			}
+//			
+//			if (u.interests.contains(WOTD.id)) {
+//				contents.append(dictionaryWotdService.getPlainText())
+//				contents.append("\n\n")
+//			}
+//			
+//			if (u.interests.contains(TOP_NEWS.id)) {
+//				contents.append(yahooNewsFeedService.getPlainText())
+//				contents.append("\n\n")
+//			}
+//			
+//			if (u.interests.contains(GOOGLE_CAL.id)) {
+//				contents.append(googleCalendarService.getPlainText(u))
+//				contents.append("\n\n")
+//			}
 			
 			contents.append(getPlainTextFooter())
 			
