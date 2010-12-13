@@ -43,6 +43,7 @@ grails.enable.native2ascii = true
 grails.logging.jul.usebridge = true
 // packages to include in Spring bean scanning
 grails.spring.bean.packages = []
+grails.views.javascript.library="jquery"
 
 google.appengine.application="apponthebowery"
 
