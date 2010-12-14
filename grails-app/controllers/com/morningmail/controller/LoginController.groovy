@@ -9,9 +9,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 class LoginController {
 	static allowedMethods = [completeGoogAuth: ["POST", "GET"]]
 	
-
-	
-	
 	def googleCalendarService
 	
 	/**
@@ -73,19 +70,12 @@ class LoginController {
 	 */
 	def personalize = {
 		if (!session.userEmail) {
-			redirect(action:'index')
+			redirect(uri:'/')
 		}
 				
 		User user = User.findByEmail(session.userEmail)
 				
 		if(params.saveInterests) {
-//			def cities = params.get("cities[]")
-//			System.out.println("cities:" + cities)
-//			if (cities) {
-//				for (String city: cities)
-//					System.out.println(city)
-//			}
-			
 			user.interests.clear()
 			
 			def interests = params.get("interests[]")
@@ -93,21 +83,6 @@ class LoginController {
 				for (String interest: interests)
 					user.interests.add(KeyFactory.stringToKey(interest))
 			}
-			
-//			if (params.get(Interest.TYPE_WEATHER))
-//				user.interests.add(Interest.findByType(Interest.TYPE_WEATHER).id)
-//
-//			if (params.get(Interest.TYPE_WOTD))
-//				user.interests.add(Interest.findByType(Interest.TYPE_WOTD).id)
-//
-//			if (params.get(Interest.TYPE_TOP_NEWS)) 
-//				user.interests.add(Interest.findByType(Interest.TYPE_TOP_NEWS).id)
-//							
-//			if (params.get(Interest.TYPE_GOOGLE_CAL))
-//				user.interests.add(Interest.findByType(Interest.TYPE_GOOGLE_CAL).id)
-//
-//			if (params.get(Interest.TYPE_TECHCRUNCH))
-//				user.interests.add(Interest.findByType(Interest.TYPE_TECHCRUNCH).id)
 		} 
 
 	 

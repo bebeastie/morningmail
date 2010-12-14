@@ -28,7 +28,7 @@ class YahooNewsFeedService implements FeedService {
 			Collection items = rss.getChannel().getItems();
 			
 			String html = feed.title + "<br/>"
-			String plainText = feed.title.toUpperCase() + "\n"
+			String plainText = "<b>" + feed.title.toUpperCase() + "</b>\n"
 			
 			int storyCount = 1;
 			
@@ -45,6 +45,7 @@ class YahooNewsFeedService implements FeedService {
 					title = title.replaceAll("\\(AP\\)","");
 					title = title.replaceAll("\\(Reuters\\)","");
 					title = title.trim()
+					title = "<a href=\""+item.getLink()+"\">"+title+ "</a>"
 					
 					html+="<h3>"+title+"</h3>";
 					Document doc = Jsoup.parse(item.getDescription().getText());
@@ -67,6 +68,7 @@ class YahooNewsFeedService implements FeedService {
 					plainText += title 
 					plainText += "\n"
 					plainText += doc.text() 
+//					plainText +=  "<a href=\""+item.getLink()+"\">More</a>"
 					plainText += "\n\n"
 					storyCount++
 				}

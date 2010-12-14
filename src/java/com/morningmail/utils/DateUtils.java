@@ -101,8 +101,8 @@ public class DateUtils {
 	public static boolean isWithin24Hours(Date date) {
 		Calendar cal = Calendar.getInstance();
 		Date now = cal.getTime();
-		
-		return (now.getTime() - date.getTime()) > 86400000; 
+
+		return ((now.getTime() - date.getTime()) <= 86400000); 
 	}
 	
 }

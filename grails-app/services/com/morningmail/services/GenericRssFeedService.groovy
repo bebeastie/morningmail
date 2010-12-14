@@ -27,23 +27,23 @@ class GenericRssFeedService implements FeedService {
 		Collection items = rss.getChannel().getItems();
 		
 		String html = feed.title + "<br/>"
-		String plainText = feed.title.toUpperCase() + "\n"
+		String plainText = "<b>" + feed.title.toUpperCase() + "</b>\n"
 		
-		int storyCount = 1;
+		int storyCount = 0;
 		
 		if(items != null && !items.isEmpty()) {
 			//Iterate over our main elements. Should have one for each article
 			for (Item item : items) {
-				if (storyCount > feed.maxStories)
+				if (storyCount >= feed.maxStories)
 					break
 
 				//e.g.: Sun, 12 Dec 2010 07:41:11 PST
 				DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 				Date date = formatter.parse(item.getPubDate().getText());
-				
+			
 				if (DateUtils.isWithin24Hours(date)) {
-					String title = item.getTitle()
-					title = title.trim()
+					
+					String title = "<a href=\""+item.getLink()+"\">"+item.getTitle() + "</a>"
 					
 					Document doc = Jsoup.parse(item.getDescription().getText());
 					String description = doc.text()
@@ -52,10 +52,19 @@ class GenericRssFeedService implements FeedService {
 					if (feed.maxWordsPerStory != -1) 
 						description = TextUtils.getSummary(description, feed.maxWordsPerStory, true)
 					
+					String moreLink = "<a href=\""+item.getLink()+"\">More</a>"
+					
 					//plainText
-					plainText += title
-					plainText += "\n"
+					if (feed.includeItemTitle) {
+						plainText += title
+						plainText += "\n"
+					}
+					
 					plainText += description
+					
+					if (feed.includeItemMoreLink) 
+						plainText += moreLink
+					
 					plainText += "\n\n"
 					
 					//html @TODO
@@ -64,6 +73,10 @@ class GenericRssFeedService implements FeedService {
 				}
 			}
 		}
+		
+		if (storyCount == 0)
+			plainText += "No new items"
+			
 		plainText = plainText.trim()
 		
 		feed.html = new Text(html)

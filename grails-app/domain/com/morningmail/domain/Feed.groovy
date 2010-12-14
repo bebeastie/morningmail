@@ -21,12 +21,28 @@ class Feed implements Serializable {
 	@Basic
 	String title
 	
+	/*
+	 * Max # of stories to list
+	 */
 	@Basic 
 	Integer maxStories
 	
 	@Basic
 	Integer maxWordsPerStory
 	
+	/*
+	 * Set this to add a "More" link after every item. 
+	 * Primarily used for items that are summarized. 
+	 */
+	@Basic 
+	Boolean includeItemMoreLink
+	
+	@Basic
+	Boolean includeItemTitle = true
+
+	/*
+	 * The URL that should be used to request the feed
+	 */
 	@Basic
 	String url
 	

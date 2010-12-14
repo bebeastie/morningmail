@@ -1,3 +1,5 @@
+import com.morningmail.services.GlobalFeedService;
+
 import com.morningmail.domain.*;
 import com.google.appengine.api.datastore.Key;
 import com.morningmail.services.*;
@@ -21,6 +23,7 @@ class BootStrap {
 			feed.title = "News"
 			feed.maxStories = 5
 			feed.maxWordsPerStory = Feed.NO_MAX
+			feed.includeItemMoreLink = false
 			feed.save()
 		}
 		
@@ -28,11 +31,13 @@ class BootStrap {
 		if (!Feed.findById(GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD)) {
 			Feed feed = new Feed()
 			feed.id = GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD
-			feed.type = Feed.TYPE_SPECIFIC
+			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://dictionary.reference.com/wordoftheday/wotd.rss"
 			feed.title = "Word of the Day"
 			feed.maxStories = 1
 			feed.maxWordsPerStory = Feed.NO_MAX
+			feed.includeItemMoreLink = false
+			feed.includeItemTitle = false
 			feed.save()
 		}
 		
@@ -45,8 +50,63 @@ class BootStrap {
 			feed.title = "TechCrunch"
 			feed.maxStories = 5
 			feed.maxWordsPerStory = 40
+			feed.includeItemMoreLink = false
 			feed.save()
 		}
+
+		//A VC
+		if (!Feed.findById(GlobalFeedService.ID_AVC)) {
+			Feed feed = new Feed()
+			feed.id = GlobalFeedService.ID_AVC
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/avc"
+			feed.title = "A VC"
+			feed.maxStories = 5
+			feed.maxWordsPerStory = 40
+			feed.includeItemMoreLink = false
+			feed.save()
+		}
+		
+		//Wall Street Journal US Home
+		if (!Feed.findById(GlobalFeedService.ID_WSJ_HOME_US)) {
+			Feed feed = new Feed()
+			feed.id = GlobalFeedService.ID_WSJ_HOME_US
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://online.wsj.com/xml/rss/3_7011.xml"
+			feed.title = "WSJ: U.S. Homepage"
+			feed.maxStories = 5
+			feed.maxWordsPerStory = Feed.NO_MAX
+			feed.includeItemMoreLink = false
+			feed.save()
+		}
+		
+		//Blog: Steve Blank
+		if (!Feed.findById(GlobalFeedService.ID_BLOG_STEVE_BLANK)) {
+			Feed feed = new Feed()
+			feed.id = GlobalFeedService.ID_BLOG_STEVE_BLANK
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://steveblank.com/feed/"
+			feed.title = "Steve Blank"
+			feed.maxStories = 5
+			feed.maxWordsPerStory = 40
+			feed.includeItemMoreLink = false
+			feed.save()
+		}
+		
+//		//Blog: Eric Ries
+//		if (!Feed.findById(GlobalFeedService.ID_BLOG_ERIC_RIES)) {
+//			Feed feed = new Feed()
+//			feed.id = GlobalFeedService.ID_BLOG_ERIC_RIES
+//			feed.type = Feed.TYPE_GENERIC_RSS
+//			feed.url = "http://feeds.feedburner.com/startup/lessons/learned"
+//			feed.title = "Eric Ries"
+//			feed.maxStories = 5
+//			feed.maxWordsPerStory = 40
+//			feed.includeItemMoreLink = true
+//			feed.save()
+//		}
+		
+		http://feeds.feedburner.com/startup/lessons/learned
 		
 		//END FEED CONFIG
 		
@@ -95,6 +155,42 @@ class BootStrap {
 			interest.feedId = GlobalFeedService.ID_TECHCRUNCH
 			interest.save()
 		}
+		
+		if (!Interest.findByType(Interest.TYPE_AVC)) {
+			Interest interest = new Interest()
+			interest.type = Interest.TYPE_AVC
+			interest.displayName = "Blog: A VC"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.feedId = GlobalFeedService.ID_AVC
+			interest.save()
+		}
+		
+		if (!Interest.findByType(Interest.TYPE_WSJ_US_HOME)) {
+			Interest interest = new Interest()
+			interest.type = Interest.TYPE_WSJ_US_HOME
+			interest.displayName = "WSJ: U.S. Homepage"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.feedId = GlobalFeedService.ID_WSJ_HOME_US
+			interest.save()
+		}
+		
+		if (!Interest.findByType(Interest.TYPE_BLOG_STEVE_BLANK)) {
+			Interest interest = new Interest()
+			interest.type = Interest.TYPE_BLOG_STEVE_BLANK
+			interest.displayName = "Blog: Steve Blank"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.feedId = GlobalFeedService.ID_BLOG_STEVE_BLANK
+			interest.save()
+		}
+		
+//		if (!Interest.findByType(Interest.TYPE_BLOG_ERIC_RIES)) {
+//			Interest interest = new Interest()
+//			interest.type = Interest.TYPE_BLOG_ERIC_RIES
+//			interest.displayName = "Blog: Eric Ries"
+//			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+//			interest.feedId = GlobalFeedService.ID_BLOG_ERIC_RIES
+//			interest.save()
+//		}
 		//END INTEREST CONFIG	
 		
     }

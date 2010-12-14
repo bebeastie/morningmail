@@ -25,7 +25,7 @@ class GoogleWeatherService implements PersonalFeedService{
 		String city = doc.getElementsByTagName("forecast_information").item(0)
 			.getElementsByTagName("city").item(0).getAttribute("data");
 
-		plainText += "WEATHER - " + city.toUpperCase() + "\n"
+		plainText += "<b>WEATHER - " + city.toUpperCase() + "</b>\n"
 		
 
 		
