@@ -89,8 +89,8 @@ class GenericRssFeedService implements FeedService {
 		}
 		
 		if (storyCount == 0) {
-			text.append("No new items")
-			html.append("No new items") 
+			html.append("No new items").append("<br/>")
+			text.append("No new items").append("\n")
 		}
 		
 		html.append("</div>")

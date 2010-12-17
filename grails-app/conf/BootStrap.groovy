@@ -21,7 +21,7 @@ class BootStrap {
 			feed.type = Feed.TYPE_SPECIFIC
 			feed.url = "http://rss.news.yahoo.com/rss/topstories"
 			feed.title = "News"
-			feed.maxStories = 5
+			feed.maxStories = 4
 			feed.maxWordsPerStory = 40
 			feed.includeItemMoreLink = false
 			feed.save()
@@ -74,8 +74,8 @@ class BootStrap {
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://online.wsj.com/xml/rss/3_7011.xml"
 			feed.title = "WSJ: U.S. Homepage"
-			feed.maxStories = 5
-			feed.maxWordsPerStory = Feed.NO_MAX
+			feed.maxStories = 4
+			feed.maxWordsPerStory = 40
 			feed.includeItemMoreLink = false
 			feed.save()
 		}

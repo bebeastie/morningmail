@@ -65,7 +65,7 @@ class GoogleWeatherService implements PersonalFeedService{
 		}
 		
 		feed.html = new Text(html.toString())
-		feed.plainText = new Text(text.toString())
+		feed.plainText = new Text(text.toString().trim())
 		feed.lastUpdated = new Date()
 			
 	} 
