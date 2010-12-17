@@ -41,9 +41,12 @@ class EmailService implements InitializingBean {
 	
 	public static final String getHtmlHeader() {
 		StringBuffer header = new StringBuffer()
-		header.append("<html><head><title>").append(getTodaysDate()).append("</title></head>")
-		header.append("<body>")
-		header.append("<center><b>MorningMail - " + getTodaysDate() + "</b><br/><br/></center>")
+		header.append("<html><head>")
+			.append(getCss()).append("<title>")
+			.append(getTodaysDate())
+			.append("</title></head>")
+			.append("<body>")
+			.append("<center><b>MorningMail - " + getTodaysDate() + "</b><br/><br/></center>")
 		return header.toString()
 	}
 	
@@ -52,6 +55,11 @@ class EmailService implements InitializingBean {
 		footer.append("Thanks,<br/>MorningMail")
 		footer.append("</body></html>")
 		return footer.toString()
+	}
+	
+	public static final String getCss() {
+		return "<style>body{font-size: 12px;color: #111111;line-height: 150%;font-family: Verdana;" +
+			"background-color: #FFFFFF;padding: 5px;border: 0px none #FFFFFF;}</style>"
 	}
 	
 	private static String getTodaysDate() {
@@ -158,7 +166,8 @@ class EmailService implements InitializingBean {
             mp.addBodyPart(tp);
 
             tp = new MimeBodyPart();
-            tp.setContent(email.html.getValue(), "text/html");
+            tp.setContent(email.html.getValue()
+				, "text/html");
             mp.addBodyPart(tp);
 
             mp.setSubType("alternative");
