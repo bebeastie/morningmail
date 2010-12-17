@@ -19,7 +19,7 @@ class EmailController {
 	def render = {
 		User u = User.findById(params.id)
 		Email email = emailService.render(u)
-		render(view:'index', model:[returnValue:email.contents.getValue()])
+		render(view:'index', model:[returnValue:email.html.getValue()])
 	}
 	
 	def send = {

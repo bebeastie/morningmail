@@ -16,6 +16,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.select.Elements
 import org.jsoup.nodes.Element
 import org.springframework.beans.factory.InitializingBean
+import com.morningmail.utils.TextUtils
 
 class YahooNewsFeedService implements FeedService {
 	
@@ -27,15 +28,20 @@ class YahooNewsFeedService implements FeedService {
 			
 			Collection items = rss.getChannel().getItems();
 			
-			String html = feed.title + "<br/>"
-			String plainText = "<b>" + feed.title.toUpperCase() + "</b>\n"
+			StringBuffer html = new StringBuffer()
+			StringBuffer text = new StringBuffer()
 			
-			int storyCount = 1;
+			html.append("<div>")
+			html.append("<b>").append(feed.title.toUpperCase()).append("</b><br/>")
+			
+			text.append(feed.title.toUpperCase()).append("\n")
+			
+			int storyCount = 0;
 			
 			if(items != null && !items.isEmpty()) {
 				//Iterate over our main elements. Should have one for each article		
 				for (Item item : items) {
-					if (storyCount > feed.maxStories) 
+					if (storyCount >= feed.maxStories) 
 						break
 						
 					//html
@@ -45,43 +51,77 @@ class YahooNewsFeedService implements FeedService {
 					title = title.replaceAll("\\(AP\\)","");
 					title = title.replaceAll("\\(Reuters\\)","");
 					title = title.trim()
-					title = "<a href=\""+item.getLink()+"\">"+title+ "</a>"
 					
-					html+="<h3>"+title+"</h3>";
+					String htmlTitle = new StringBuffer("<a href=\"")
+						.append(item.getLink())
+						.append("\">")
+						.append(title)
+						.append("</a><br/>")
+						.toString()
+						
+					String textTitle = new StringBuffer()
+						.append(title)
+						.append("\n")
+						.toString()
+					
+	
 					Document doc = Jsoup.parse(item.getDescription().getText());
-					Element img = doc.select("img").first();
-					if (img) {
-						Integer newWidth = new Integer(img.attr("width"))/3
-						Integer newHeight = new Integer(img.attr("height"))/3
-						img.attr("width", newWidth.toString())
-						img.attr("height", newHeight.toString())
-						html+=img.outerHtml() 
-					}
-					html+=doc.text() + " "
-					Element link = doc.select("a").first();
-					if (link) {
-						html+="<a href=\"" + link.attr("href") + "\">More</a>" 
-					}
-					html+="<br/>"
 					
-					//plainText
-					plainText += title 
-					plainText += "\n"
-					plainText += doc.text() 
-//					plainText +=  "<a href=\""+item.getLink()+"\">More</a>"
-					plainText += "\n\n"
+					String description = doc.text()
+					
+					if (feed.maxWordsPerStory != Feed.NO_MAX)
+						description = TextUtils.getSummary(description, feed.maxWordsPerStory, true)
+					
+					description = description.trim()
+					
+//						Element img = doc.select("img").first();
+//					if (img) {
+//						Integer newWidth = new Integer(img.attr("width"))/3
+//						Integer newHeight = new Integer(img.attr("height"))/3
+//						img.attr("width", newWidth.toString())
+//						img.attr("height", newHeight.toString())
+//						html+=img.outerHtml() 
+//					}
+//
+//					Element link = doc.select("a").first();
+//					if (link) {
+//						html+="<a href=\"" + link.attr("href") + "\">More</a>" 
+//					}
+//					html+="<br/>"
+					
+					if (feed.includeItemTitle) {
+						html.append(htmlTitle)
+						text.append(textTitle)
+					}
+					
+					html.append(description)
+					text.append(description)
+					
+					if (feed.includeItemMoreLink) { 
+						html.append("<a href=\""+item.getLink()+"\">More</a>")
+						text.append(item.getLink())
+					}
+					
+					html.append("<br/>")
+					text.append("\n\n")
+					
 					storyCount++
 				}
 			}
-			plainText = plainText.trim()
 			
-		
-			feed.html = new Text(html)
-			feed.plainText = new Text(plainText)
+			if (storyCount == 0) {
+				text.append("No new items")
+				html.append("No new items") 
+			}
+			
+			html.append("</div>")
+					
+			feed.html = new Text(html.toString())
+			feed.plainText = new Text(text.toString().trim())
 			
 			feed.lastUpdated = new Date()
 		} catch(Exception e) {
-			log.info(e.toString())
+			log.error("Problem parsing feed", e)
 		}
 	}
 	

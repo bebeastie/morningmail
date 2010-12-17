@@ -18,30 +18,41 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.BodyPart;
 import org.springframework.beans.factory.InitializingBean
 import java.text.SimpleDateFormat
 import com.google.appengine.api.datastore.Key
 
 class EmailService implements InitializingBean {
-//	public static Interest TOP_NEWS
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
-//	public static Interest WOTD
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
 	public static final String getPlainTextHeader() {
-		String header = new String()
-		header = "MorningMail - "
-		return header
+		return "MorningMail - " + getTodaysDate() + "\n\n"
 	}
 	
 	public static final String getPlainTextFooter() {
-		String footer = new String()
-		footer = "Thanks,\nMorningMail"
-		return footer
+		return "Thanks,\nMorningMail"
 	}
 	
+	public static final String getHtmlHeader() {
+		StringBuffer header = new StringBuffer()
+		header.append("<html><head><title>").append(getTodaysDate()).append("</title></head>")
+		header.append("<body>")
+		header.append("<center><b>MorningMail - " + getTodaysDate() + "</b><br/><br/></center>")
+		return header.toString()
+	}
+	
+	public static final String getHtmlFooter() {
+		StringBuffer footer = new StringBuffer() 
+		footer.append("Thanks,<br/>MorningMail")
+		footer.append("</body></html>")
+		return footer.toString()
+	}
 	
 	private static String getTodaysDate() {
 		Date now = Calendar.getInstance().getTime()
@@ -51,16 +62,12 @@ class EmailService implements InitializingBean {
 	}
 	
 	void afterPropertiesSet() {
-//		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
 		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
 		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
-//		WOTD = Interest.findByType(Interest.TYPE_WOTD)
 	}
 	
 	PersonalFeedService googleWeatherService
 	PersonalFeedService googleCalendarService
-//	FeedService yahooNewsFeedService
-//	FeedService dictionaryWotdService
 	FeedService globalFeedService
 	
 	public void fetchPersonalFeeds(User u){
@@ -79,52 +86,38 @@ class EmailService implements InitializingBean {
 	public Email render(User u) {
 		try {
 		
-			StringBuffer contents = new StringBuffer()
-			contents.append(getPlainTextHeader() + getTodaysDate() + "\n\n")
+			StringBuffer text = new StringBuffer()
+			StringBuffer html = new StringBuffer()
+			
+			html.append(getHtmlHeader())
+			text.append(getPlainTextHeader())
 			
 			for (Key k: u.interests) {
 				Interest interest = Interest.findById(k)
 				
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
 					Feed feed = Feed.findById(interest.feedId)
-					contents.append(globalFeedService.getPlainText(feed))
-					contents.append("\n\n")
+					html.append(globalFeedService.getHtml(feed)).append("<br/>")
+					text.append(globalFeedService.getPlainText(feed)).append("\n\n")
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
 					if (interest.feedId.equals(PersonalFeed.TYPE_GOOGLE_CAL)) {
-						contents.append(googleCalendarService.getPlainText(u))
-						contents.append("\n\n")
+						html.append(googleCalendarService.getHtml(u)).append("<br/>")
+						text.append(googleCalendarService.getPlainText(u)).append("\n\n")
 					} else if (interest.feedId.equals(PersonalFeed.TYPE_WEATHER)) {
-						contents.append(googleWeatherService.getPlainText(u))
-						contents.append("\n\n")
+						html.append(googleWeatherService.getHtml(u)).append("<br/>")
+						text.append(googleWeatherService.getPlainText(u)).append("\n\n")
 					}
 				}
 			}
-//			if (u.interests.contains(WEATHER.id)) {
-//				contents.append(googleWeatherService.getPlainText(u)) 
-//				contents.append("\n\n")
-//			}
-//			
-//			if (u.interests.contains(WOTD.id)) {
-//				contents.append(dictionaryWotdService.getPlainText())
-//				contents.append("\n\n")
-//			}
-//			
-//			if (u.interests.contains(TOP_NEWS.id)) {
-//				contents.append(yahooNewsFeedService.getPlainText())
-//				contents.append("\n\n")
-//			}
-//			
-//			if (u.interests.contains(GOOGLE_CAL.id)) {
-//				contents.append(googleCalendarService.getPlainText(u))
-//				contents.append("\n\n")
-//			}
 			
-			contents.append(getPlainTextFooter())
+			html.append(getHtmlFooter())
+			text.append(getPlainTextFooter())
 			
 			//now time to save it
 			Email email = new Email()
 		
-			email.contents = new Text(contents.toString().trim())
+			email.html = new Text(html.toString())
+			email.plainText = new Text(text.toString().trim())
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
 		
@@ -148,19 +141,39 @@ class EmailService implements InitializingBean {
 	public void send(Email email) {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
-
-		String msgBody = email.contents.getValue()
 			
 		String subject = SUBJECT_BEGIN + getTodaysDate()
 		
 		try {
-			Message msg = new MimeMessage(session);
-			msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
+            Message msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
 							 new InternetAddress(email.user.email, email.user.name));
 			msg.setSubject(subject);
-			msg.setText(msgBody)
-			Transport.send(msg);
+           
+            MimeMultipart mp = new MimeMultipart();
+            BodyPart tp = new MimeBodyPart();
+            tp.setText(email.plainText.getValue(), "UTF-8");
+            mp.addBodyPart(tp);
+
+            tp = new MimeBodyPart();
+            tp.setContent(email.html.getValue(), "text/html");
+            mp.addBodyPart(tp);
+
+            mp.setSubType("alternative");
+
+            msg.setContent(mp);
+
+            Transport.send(msg);
+	  
+//			Message msg = new MimeMessage(session);
+//			msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
+//			msg.addRecipient(Message.RecipientType.TO,
+//							 new InternetAddress(email.user.email, email.user.name));
+//			msg.setSubject(subject);
+//			msg.setText(msgBody)
+//			Transport.send(msg);
 			
 			//now mark it sent
 			email.status = Email.STATUS_SENT

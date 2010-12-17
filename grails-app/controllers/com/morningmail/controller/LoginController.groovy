@@ -80,8 +80,15 @@ class LoginController {
 			
 			def interests = params.get("interests[]")
 			if (interests) {
-				for (String interest: interests)
-					user.interests.add(KeyFactory.stringToKey(interest))
+				//there could be only one interest
+				//so we need to check if we should 
+				//loop through or just take the one we have
+				if (interests instanceof String) {
+					user.interests.add(KeyFactory.stringToKey(interests))
+				} else {
+					for (String interest: interests)
+						user.interests.add(KeyFactory.stringToKey(interest))
+				}
 			}
 		} 
 

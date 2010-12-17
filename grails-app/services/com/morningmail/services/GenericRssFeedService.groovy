@@ -26,8 +26,13 @@ class GenericRssFeedService implements FeedService {
 		
 		Collection items = rss.getChannel().getItems();
 		
-		String html = feed.title + "<br/>"
-		String plainText = "<b>" + feed.title.toUpperCase() + "</b>\n"
+		StringBuffer html = new StringBuffer()
+		StringBuffer text = new StringBuffer()
+		
+		html.append("<div>")
+		html.append("<b>").append(feed.title.toUpperCase()).append("</b><br/>")
+		
+		text.append(feed.title.toUpperCase()).append("\n")
 		
 		int storyCount = 0;
 		
@@ -43,47 +48,57 @@ class GenericRssFeedService implements FeedService {
 			
 				if (DateUtils.isWithin24Hours(date)) {
 					
-					String title = "<a href=\""+item.getLink()+"\">"+item.getTitle() + "</a>"
+					String htmlTitle = new StringBuffer("<a href=\"")
+						.append(item.getLink())
+						.append("\">")
+						.append(item.getTitle())
+						.append("</a><br/>")
+						.toString()
+						
+					String textTitle = new StringBuffer()
+						.append(item.getTitle())
+						.append("\n")
+						.toString()
 					
 					Document doc = Jsoup.parse(item.getDescription().getText());
 					String description = doc.text()
-					description.trim()
+					description = description.trim()
 					
-					if (feed.maxWordsPerStory != -1) 
+					if (feed.maxWordsPerStory != Feed.NO_MAX) 
 						description = TextUtils.getSummary(description, feed.maxWordsPerStory, true)
 					
-					String moreLink = "<a href=\""+item.getLink()+"\">More</a>"
-					
-					//plainText
 					if (feed.includeItemTitle) {
-						plainText += title
-						plainText += "\n"
+						html.append(htmlTitle)
+						text.append(textTitle)
 					}
 					
-					plainText += description
+					html.append(description)
+					text.append(description)
 					
-					if (feed.includeItemMoreLink) 
-						plainText += moreLink
+					if (feed.includeItemMoreLink) { 
+						html.append("<a href=\""+item.getLink()+"\">More</a>")
+						text.append(item.getLink())
+					}
 					
-					plainText += "\n\n"
-					
-					//html @TODO
+					html.append("<br/>")
+					text.append("\n\n")
 					
 					storyCount++
 				}
 			}
 		}
 		
-		if (storyCount == 0)
-			plainText += "No new items"
-			
-		plainText = plainText.trim()
+		if (storyCount == 0) {
+			text.append("No new items")
+			html.append("No new items") 
+		}
 		
-		feed.html = new Text(html)
-		feed.plainText = new Text(plainText)
+		html.append("</div>")
+				
+		feed.html = new Text(html.toString())
+		feed.plainText = new Text(text.toString().trim())
 		
 		feed.lastUpdated = new Date()
-		
 	}
 	
 	public String getHtml(Feed feed) {

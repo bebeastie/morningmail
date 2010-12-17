@@ -11,7 +11,7 @@ import com.morningmail.domain.Email
 import com.google.appengine.api.datastore.KeyFactory
 
 class BatchEmailService {
-	private static final Long LOWER_DATE_BOUND = 300000 //5 min
+	private static final Long LOWER_DATE_BOUND = 600000 //10 min
 	private static final Long UPPER_DATE_BOUND = 300000 //5 min
 	private static final Long PREVIOUS_PERIOD = 18000000  //5 hours
 	

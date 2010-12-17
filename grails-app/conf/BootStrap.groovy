@@ -22,7 +22,7 @@ class BootStrap {
 			feed.url = "http://rss.news.yahoo.com/rss/topstories"
 			feed.title = "News"
 			feed.maxStories = 5
-			feed.maxWordsPerStory = Feed.NO_MAX
+			feed.maxWordsPerStory = 40
 			feed.includeItemMoreLink = false
 			feed.save()
 		}

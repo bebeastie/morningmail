@@ -18,7 +18,10 @@ class Email implements Serializable {
 	User user;
 	
 	@Basic
-	Text contents
+	Text plainText
+	
+	@Basic
+	Text html
 
 	@Basic
 	Date desiredDeliveryDate	

@@ -14,9 +14,6 @@ class GoogleWeatherService implements PersonalFeedService{
 	private static final WEATHER_URL = "/ig/api?weather="
 	
 	public void fetch(User u) {
-		String plainText = ""
-		String html = ""
-		
 		URL url = new URL(BASE_URL + WEATHER_URL + u.zipCode)
 
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -25,24 +22,36 @@ class GoogleWeatherService implements PersonalFeedService{
 		String city = doc.getElementsByTagName("forecast_information").item(0)
 			.getElementsByTagName("city").item(0).getAttribute("data");
 
-		plainText += "<b>WEATHER - " + city.toUpperCase() + "</b>\n"
+		StringBuffer html = new StringBuffer()
+		StringBuffer text = new StringBuffer()
+			
+		html.append("<div>")
+		html.append("<b>").append("WEATHER - ").append(city.toUpperCase()).append("</b><br/>")
+			
+		text.append("WEATHER - ").append(city.toUpperCase()).append("\n")
 		
-
 		
 		//current conditions
-		Element currentConditions = doc.getElementsByTagName("current_conditions").item(0);
-		plainText += "Current conditions: "
-		plainText += currentConditions.getElementsByTagName("condition").item(0).getAttribute("data") + ", "
-		plainText += currentConditions.getElementsByTagName("temp_f").item(0).getAttribute("data") + "F, "
-		plainText += currentConditions.getElementsByTagName("wind_condition").item(0).getAttribute("data") + " "
-		plainText += "\n"
+		StringBuffer current = new StringBuffer()
+		Element currentConditions = doc.getElementsByTagName("current_conditions").item(0)
+		current.append("Current conditions: ")
+		current.append(currentConditions.getElementsByTagName("condition").item(0).getAttribute("data")).append(", ")
+		current.append(currentConditions.getElementsByTagName("temp_f").item(0).getAttribute("data")).append("F, ")
+		current.append(currentConditions.getElementsByTagName("wind_condition").item(0).getAttribute("data")).append(" ")
+		
+		html.append(current).append("<br/>")
+		text.append(current).append("\n")
 		
 		//forecast
-		Element forecastConditions = doc.getElementsByTagName("forecast_conditions").item(0);
-		plainText += "Today's forecast: "
-		plainText += forecastConditions.getElementsByTagName("condition").item(0).getAttribute("data") + ", "
-		plainText += "high of " + forecastConditions.getElementsByTagName("high").item(0).getAttribute("data") + "F, "
-		plainText += "low of " + forecastConditions.getElementsByTagName("low").item(0).getAttribute("data") + "F"
+		StringBuffer forecast = new StringBuffer()
+		Element forecastConditions = doc.getElementsByTagName("forecast_conditions").item(0)
+		forecast.append("Today's forecast: ")
+		forecast.append(forecastConditions.getElementsByTagName("condition").item(0).getAttribute("data")).append(", ")
+		forecast.append("high of ").append(forecastConditions.getElementsByTagName("high").item(0).getAttribute("data")).append("F, ")
+		forecast.append("low of ").append(forecastConditions.getElementsByTagName("low").item(0).getAttribute("data")).append("F")
+		
+		html.append(forecast).append("<br/></div>")
+		text.append(forecast).append("\n")
 		
 		//now save the feed
 		PersonalFeed feed = PersonalFeed.findByTypeAndUser(PersonalFeed.TYPE_WEATHER, u);
@@ -55,8 +64,8 @@ class GoogleWeatherService implements PersonalFeedService{
 			feed.save()
 		}
 		
-		feed.html = new Text(plainText)
-		feed.plainText = new Text(plainText)
+		feed.html = new Text(html.toString())
+		feed.plainText = new Text(text.toString())
 		feed.lastUpdated = new Date()
 			
 	} 

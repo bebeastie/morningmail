@@ -1,6 +1,9 @@
 package com.morningmail.utils;
 
 import java.text.BreakIterator;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
 
 public class TextUtils {
 	
@@ -21,7 +24,9 @@ public class TextUtils {
         
         text = text.substring(start,end);
         text = text.trim();
+        
         text = addEllipses ? text + "...":text;
         return text;
 	}
+	
 }
