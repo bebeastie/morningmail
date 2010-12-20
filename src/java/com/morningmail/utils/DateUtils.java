@@ -105,4 +105,7 @@ public class DateUtils {
 		return ((now.getTime() - date.getTime()) <= 86400000); 
 	}
 	
+	public static Date get24HoursAgo() {
+		return new Date(Calendar.getInstance().getTimeInMillis() - 86400000);
+	}
 }

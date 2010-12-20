@@ -183,6 +183,15 @@ class BootStrap {
 			interest.save()
 		}
 		
+		if (!Interest.findByType(Interest.TYPE_READ_LATER)) {
+			Interest interest = new Interest()
+			interest.type = Interest.TYPE_READ_LATER
+			interest.displayName = "Read Later Items"
+			interest.feedStyle = Interest.FEED_STYLE_PERSONAL
+			interest.feedId = PersonalFeed.TYPE_READ_LATER
+			interest.save()
+		}
+		
 //		if (!Interest.findByType(Interest.TYPE_BLOG_ERIC_RIES)) {
 //			Interest interest = new Interest()
 //			interest.type = Interest.TYPE_BLOG_ERIC_RIES

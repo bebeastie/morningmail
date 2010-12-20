@@ -5,9 +5,12 @@ import com.morningmail.services.*;
 import com.morningmail.utils.DateUtils;
 import java.text.ParseException;
 import com.google.appengine.api.datastore.KeyFactory;
+import java.net.URLDecoder
 
-class LoginController {
+class UserController {
 	static allowedMethods = [completeGoogAuth: ["POST", "GET"]]
+	
+	static final String LOGIN_DISPLAY_MINIMAL = "login_minimal"
 	
 	def googleCalendarService
 	
@@ -18,22 +21,23 @@ class LoginController {
 		User user
 		
 		try {
-			user = User.findByEmail(params.email)
+			user = User.findByEmail(params.regEmail)
 			
 			if(!user) {
 				user = new User()
 				user.lastRenderedDate = new Date(0);
 				user.name = params.name
-				user.email = params.email
+				user.email = params.regEmail
 				user.zipCode = params.zipCode
 				user.localDeliveryTime = params.deliveryTime
 				user.timeZone = params.timeZone
-				user.password = params.password
+				user.password = params.regPassword
 				
 				user.deliveryTime = DateUtils.
 					getNormalizedDeliveryTime(user.localDeliveryTime, DateUtils.getOffsetTimeZone(user.timeZone))
 					
 				if (user.validate() && "tufts".equals(params.inviteCode)) {
+					user.id = KeyFactory.createKey(User.class.getSimpleName(), user.email)
 					user.save()
 					session.userEmail = user.email
 					redirect(action:'personalize', model:[user:user])
@@ -47,20 +51,42 @@ class LoginController {
 	}
 	
 	def login = {
-		User user
+		String view = "/index"
 		
-		try {
-			user = User.findByEmail(params.email2)
-			
-			//@TODO store encrypted passwords
-			if (user && user.password.equals(params.password2)) {
-				session.userEmail = user.email
-				redirect(action:'personalize', model:[user:user])
-			}
-		} catch (Exception e) {
-			log.error("Error processing login", e)
+		if (LOGIN_DISPLAY_MINIMAL.equals(params.display)) {
+			view = LOGIN_DISPLAY_MINIMAL
 		}
-		render(view:'/index')
+		
+		if (params.email) {
+			User user
+			try {
+				user = User.findByEmail(params.email)
+				
+				//@TODO store encrypted passwords
+				if (user && user.password.equals(params.password)) {
+					session.userEmail = user.email
+					
+					if (params.jump) {
+						redirect(uri:URLDecoder.decode(params.jump, "UTF-8"))	
+					} else {
+						redirect(action:'personalize', model:[user:user])
+					}
+					return
+				}
+			} catch (Exception e) {
+				log.error("Error processing login", e)
+			}
+		
+		} 
+		
+		render(view:view, model:[jump:params.jump,
+			display:params.display])
+	}
+	
+	def logout = {
+		session.invalidate()
+		redirect(uri:'/')
+		return
 	}
 	
 	
@@ -71,6 +97,7 @@ class LoginController {
 	def personalize = {
 		if (!session.userEmail) {
 			redirect(uri:'/')
+			return
 		}
 				
 		User user = User.findByEmail(session.userEmail)

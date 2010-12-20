@@ -46,19 +46,17 @@ class BatchEmailService {
 		//so we need to programmatically remove users that 
 		//we've rendered recently
 		List<String> validKeys = new ArrayList<String>()
-		try {
-			List<User> dbResults = q.getResultList()
+
+		List<User> dbResults = q.getResultList()
+		
+		for (Iterator<User> it = dbResults.iterator(); it.hasNext(); ) {
+			User u = it.next()
 			
-			for (Iterator<User> it = dbResults.iterator(); it.hasNext(); ) {
-				User u = it.next()
-				
-				if (u.lastRenderedDate < lastRenderedDate)
-					validKeys.add(KeyFactory.keyToString(u.id))
-			}
-			return validKeys
-		} catch (NoResultException e) {
-			return validKeys;
+			if (u.lastRenderedDate < lastRenderedDate)
+				validKeys.add(KeyFactory.keyToString(u.id))
 		}
+		return validKeys
+
 	}
 	
 	/**

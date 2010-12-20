@@ -16,7 +16,9 @@ import org.jsoup.select.Elements
 import org.jsoup.nodes.Element
 import java.text.SimpleDateFormat
 import java.text.DateFormat
+import java.util.Calendar;
 import java.util.Date
+import java.util.TimeZone;
 
 class GenericRssFeedService implements FeedService {
 	
@@ -45,7 +47,7 @@ class GenericRssFeedService implements FeedService {
 				//e.g.: Sun, 12 Dec 2010 07:41:11 PST
 				DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 				Date date = formatter.parse(item.getPubDate().getText());
-			
+				
 				if (DateUtils.isWithin24Hours(date)) {
 					
 					String htmlTitle = new StringBuffer("<a href=\"")
@@ -84,6 +86,13 @@ class GenericRssFeedService implements FeedService {
 					text.append("\n\n")
 					
 					storyCount++
+				} else {
+					Calendar cal = Calendar.getInstance();
+					Date now = cal.getTime();
+					long diff = now.getTime() - date.getTime();
+					
+					log.info("Not within 24 hours:" + date.toString())
+					log.info("Difference is: " + diff)
 				}
 			}
 		}

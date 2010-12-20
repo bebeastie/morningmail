@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Key
 class EmailService implements InitializingBean {
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
+	public static Interest READ_LATER
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
@@ -72,10 +73,13 @@ class EmailService implements InitializingBean {
 	void afterPropertiesSet() {
 		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
 		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
+		READ_LATER = Interest.findByType(Interest.TYPE_READ_LATER)
 	}
 	
 	PersonalFeedService googleWeatherService
 	PersonalFeedService googleCalendarService
+	PersonalFeedService readLaterFeedService
+	
 	FeedService globalFeedService
 	
 	public void fetchPersonalFeeds(User u){
@@ -85,6 +89,9 @@ class EmailService implements InitializingBean {
 			
 			if (u.interests.contains(WEATHER.id))
 				googleWeatherService.fetch(u)
+				
+			if (u.interests.contains(READ_LATER.id))
+				readLaterFeedService.fetch(u)
 			
 		} catch(Exception e) {
 			log.error("Can't fetch personal feeds for user $u \n", e)
@@ -114,6 +121,9 @@ class EmailService implements InitializingBean {
 					} else if (interest.feedId.equals(PersonalFeed.TYPE_WEATHER)) {
 						html.append(googleWeatherService.getHtml(u)).append("<br/>")
 						text.append(googleWeatherService.getPlainText(u)).append("\n\n")
+					} else if (interest.feedId.equals(PersonalFeed.TYPE_READ_LATER)) {
+						html.append(readLaterFeedService.getHtml(u)).append("<br/>")
+						text.append(readLaterFeedService.getPlainText(u)).append("\n\n")
 					}
 				}
 			}

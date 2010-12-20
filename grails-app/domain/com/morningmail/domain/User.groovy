@@ -12,7 +12,7 @@ class User implements Serializable {
 	public static final Date DELIVERY_BASE_DATE =  new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z").parse("11/22/2010 00:00:00 -0500")
 	
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Key id
 
 	@Basic 
@@ -62,6 +62,9 @@ class User implements Serializable {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<Email> emails = new ArrayList<Email>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+	List<ReadLaterItem> readLaters = new ArrayList<ReadLaterItem>();
 	
     static constraints = {
     	id(visible:false)

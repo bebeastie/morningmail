@@ -10,4 +10,9 @@
     <description>Render, stage and send emails every 2 minutes</description>
     <schedule>every 2 minutes</schedule>
   </cron>
+  <cron>
+    <url>/batchEmail/keepAlive</url>
+    <description>Keep alive</description>
+    <schedule>every 1 minutes</schedule>
+  </cron>
 </cronentries>

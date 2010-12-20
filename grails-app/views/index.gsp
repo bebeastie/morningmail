@@ -16,7 +16,7 @@
 		<tr>
 			<td valign="top" align="center">
 				<!--  BEGIN NEW USER AREA -->
-				<g:form controller="login" action="register">
+				<g:form controller="user" action="register">
 				
 				<table>
 					<tr>
@@ -46,13 +46,13 @@
 					<tr>
 						<td>E-mail:</td>
 						<td>
-							<input id="email" type="text" name="email" value="${user?.email}" title="email" spellcheck="false"/>
+							<input id="email" type="text" name="regEmail" value="${user?.email}" title="regEmail" spellcheck="false"/>
 						</td>
 					</tr>
 					<tr>
 						<td>Password:</td>
 						<td>
-							<input id="password" type="password" name="password" value="${user?.password}" title="password" spellcheck="false"/>
+							<input id="password" type="password" name="regPassword" value="${user?.password}" title="regPassword" spellcheck="false"/>
 						</td>
 					</tr>
 					<tr>
@@ -65,8 +65,8 @@
 					<tr>
 						<td>Delivery Time:</td>
 						<td>
-							<!-- <input id="deliveryTime" type="text" name="deliveryTime" value="${selectedLocalDeliveryTime}" title="deliveryTime" spellcheck="false"/> -->
-							<g:select name="deliveryTime" from="${deliveryTimes}" value="${selectedLocalDeliveryTime}"/> 
+							<input id="deliveryTime" type="text" name="deliveryTime" value="${selectedLocalDeliveryTime}" title="deliveryTime" spellcheck="false"/> 
+							<!--  <g:select name="deliveryTime" from="${deliveryTimes}" value="${selectedLocalDeliveryTime}"/> -->
 							<g:select name="timeZone" from="${timeZones}" value="${selectedTimeZone}"/> 
 						</td>
 					</tr>
@@ -82,7 +82,10 @@
 			</td>
 			
 			<td valign="top" align="top">
-				<g:form controller="login" action="login">
+				<g:form controller="user" action="login">
+				<input type="hidden" name="jump" value="${jump}"/>
+				<input type="hidden" name="display" value=""/>
+				
 				<table>
 					<tr>
 						<td colspan="2"><h1>Existing User Login</h1></td>
@@ -92,14 +95,14 @@
 					<tr>
 						<td>E-mail:</td>
 						<td>
-							<input id="email2" type="text" name="email2" value="" title="email2" spellcheck="false"/>
+							<input id="email2" type="text" name="email" value="" title="email" spellcheck="false"/>
 						</td>	
 					</tr>
 					
 					<tr>
 						<td>Password:</td>
 						<td>
-							<input id="password2" type="password" name="password2" value="" title="password2" spellcheck="false"/>
+							<input id="password2" type="password" name="password" value="" title="password" spellcheck="false"/>
 						</td>	
 					</tr>
 					<tr>

@@ -17,6 +17,7 @@ class Interest implements Serializable {
 	public static final String TYPE_WSJ_US_HOME = "wsj_us_home"
 	public static final String TYPE_BLOG_STEVE_BLANK = "blog_steve_blank"
 	public static final String TYPE_BLOG_ERIC_RIES = "blog_eric_ries"
+	public static final String TYPE_READ_LATER = "read_later"
 	
 	public static final String FEED_STYLE_GLOBAL = "global"
 	public static final String FEED_STYLE_PERSONAL = "personal"
