@@ -46,12 +46,12 @@ public class ReadLaterFeedService implements PersonalFeedService{
 			}
 		}
 			
-		if (readLaterItems.size() == 0) {	
-			html.append("No new items<br/>")
-			text.append("No new items\n")
-		}
-		
 		html.append("</div>")
+		
+		if (readLaterItems.size() == 0) {	
+			html = new StringBuffer()
+			text = new StringBuffer()
+		}
 		
 		PersonalFeed feed = PersonalFeed.findByTypeAndUser(PersonalFeed.TYPE_READ_LATER, u);
 		

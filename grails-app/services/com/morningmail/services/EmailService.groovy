@@ -110,22 +110,40 @@ class EmailService implements InitializingBean {
 			for (Key k: u.interests) {
 				Interest interest = Interest.findById(k)
 				
+				String htmlFeed = new String()
+				String textFeed = new String()
+			
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
 					Feed feed = Feed.findById(interest.feedId)
-					html.append(globalFeedService.getHtml(feed)).append("<br/>")
-					text.append(globalFeedService.getPlainText(feed)).append("\n\n")
+					
+					htmlFeed = globalFeedService.getHtml(feed)
+					textFeed = globalFeedService.getPlainText(feed)
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
+					PersonalFeedService pFeed;
+					
 					if (interest.feedId.equals(PersonalFeed.TYPE_GOOGLE_CAL)) {
-						html.append(googleCalendarService.getHtml(u)).append("<br/>")
-						text.append(googleCalendarService.getPlainText(u)).append("\n\n")
+						pFeed = googleCalendarService
 					} else if (interest.feedId.equals(PersonalFeed.TYPE_WEATHER)) {
-						html.append(googleWeatherService.getHtml(u)).append("<br/>")
-						text.append(googleWeatherService.getPlainText(u)).append("\n\n")
+						pFeed = googleWeatherService
 					} else if (interest.feedId.equals(PersonalFeed.TYPE_READ_LATER)) {
-						html.append(readLaterFeedService.getHtml(u)).append("<br/>")
-						text.append(readLaterFeedService.getPlainText(u)).append("\n\n")
+						pFeed = readLaterFeedService
+					} 
+					
+					if (pFeed != null) {
+						htmlFeed = pFeed.getHtml(u)
+						textFeed = pFeed.getPlainText(u)
+					} else {
+						log.error("Couldn't find service for interest " + interest)
 					}
 				}
+				
+				if (htmlFeed != "") {
+					html.append(htmlFeed).append("<br/>")
+				} 
+				
+				if (textFeed != "") {
+					text.append(textFeed).append("<\n\n>")
+				} 		
 			}
 			
 			html.append(getHtmlFooter())

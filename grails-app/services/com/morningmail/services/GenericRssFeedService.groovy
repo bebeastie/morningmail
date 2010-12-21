@@ -97,12 +97,14 @@ class GenericRssFeedService implements FeedService {
 			}
 		}
 		
+		html.append("</div>")
+		
 		if (storyCount == 0) {
-			html.append("No new items").append("<br/>")
-			text.append("No new items").append("\n")
+			html = new StringBuffer()
+			text = new StringBuffer()
 		}
 		
-		html.append("</div>")
+		
 				
 		feed.html = new Text(html.toString())
 		feed.plainText = new Text(text.toString().trim())

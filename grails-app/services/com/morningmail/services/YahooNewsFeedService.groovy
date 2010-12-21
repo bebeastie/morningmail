@@ -109,12 +109,12 @@ class YahooNewsFeedService implements FeedService {
 				}
 			}
 			
-			if (storyCount == 0) {
-				text.append("No new items<br/>")
-				html.append("No new items\n") 
-			}
-			
 			html.append("</div>")
+			
+			if (storyCount == 0) {
+				html = new StringBuffer()
+				text = new StringBuffer()
+			}
 					
 			feed.html = new Text(html.toString())
 			feed.plainText = new Text(text.toString().trim())
