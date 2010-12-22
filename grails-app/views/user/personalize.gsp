@@ -15,6 +15,9 @@
 		    $("select[multiple]").asmSelect({sortable:true, animate:true, highlight:true, addItemTarget: 'bottom'});
 		}); 
 		</script>
+				<style>
+			a.bookmarklet { background:#ffe; border:1px dotted #aaa;color:#444;padding:1px 2px 0px 2px;font-size:90%}
+		</style>
 	</head>
 	<body>
 		<h1>Hello ${user?.email}!</h1>
@@ -41,5 +44,18 @@
 		<g:actionSubmit value="Save" action="personalize" />
 		</g:form>
 		
+				Drag this link to your toolbar:
+		<a class="bookmarklet" href="javascript: q = location.href;
+if (document.getSelection) {
+	d = document.getSelection();
+} else {
+	d = '';
+};
+p = document.title;
+void (open('http://apponthebowery.appspot.com/readLater/add?url=' + encodeURIComponent(q)
+		+ '&description=' + encodeURIComponent(d) + '&title='
+		+ encodeURIComponent(p), 'MorningMail', 'toolbar=no,width=275,height=140'));">Read Later</a>
+		<br/>
+				
 	</body>
 </html>

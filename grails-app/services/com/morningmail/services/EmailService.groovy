@@ -70,6 +70,10 @@ class EmailService implements InitializingBean {
 		return dateFormatter.format(now)
 	}
 	
+	private static String getItemTitleHtml(String title) {
+		return "<b>"+title.toUpperCase()+"</b><br/>";
+	}
+	
 	void afterPropertiesSet() {
 		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
 		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
@@ -116,8 +120,8 @@ class EmailService implements InitializingBean {
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
 					Feed feed = Feed.findById(interest.feedId)
 					
-					htmlFeed = globalFeedService.getHtml(feed)
-					textFeed = globalFeedService.getPlainText(feed)
+					htmlFeed = globalFeedService.getHtml(feed, interest.displayName)
+					textFeed = globalFeedService.getPlainText(feed, interest.displayName)
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
 					PersonalFeedService pFeed;
 					

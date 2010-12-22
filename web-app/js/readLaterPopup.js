@@ -1,7 +1,3 @@
-/**
- * 
- */
-
 javascript: q = location.href;
 if (document.getSelection) {
 	d = document.getSelection();
@@ -11,4 +7,6 @@ if (document.getSelection) {
 p = document.title;
 void (open('http://localhost:8080/readLater/add?url=' + encodeURIComponent(q)
 		+ '&description=' + encodeURIComponent(d) + '&title='
-		+ encodeURIComponent(p), 'MorningMail', 'toolbar=no,width=400,height=100'));
+		+ encodeURIComponent(p), 'MorningMail', 'toolbar=no,width=275,height=140'));
+
+

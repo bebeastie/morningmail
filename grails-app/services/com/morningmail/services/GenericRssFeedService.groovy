@@ -21,6 +21,7 @@ import java.util.Date
 import java.util.TimeZone;
 
 class GenericRssFeedService implements FeedService {
+	private static final TITLE_PLACEHOLDER = "^{title}^"
 	
 	public void fetch(Feed feed) {
 		RssParser parser = RssParserFactory.createDefault();
@@ -32,9 +33,9 @@ class GenericRssFeedService implements FeedService {
 		StringBuffer text = new StringBuffer()
 		
 		html.append("<div>")
-		html.append("<b>").append(feed.title.toUpperCase()).append("</b><br/>")
+		html.append("<b>").append(TITLE_PLACEHOLDER).append("</b><br/>")
 		
-		text.append(feed.title.toUpperCase()).append("\n")
+		text.append(TITLE_PLACEHOLDER).append("\n")
 		
 		int storyCount = 0;
 		
@@ -112,12 +113,12 @@ class GenericRssFeedService implements FeedService {
 		feed.lastUpdated = new Date()
 	}
 	
-	public String getHtml(Feed feed) {
-		return feed.html.getValue()
+	public String getHtml(Feed feed, String title) { 
+		return feed.html.getValue().replaceFirst("\\Q"+TITLE_PLACEHOLDER+"\\E", title.toUpperCase())
 	}
 	
-	public String getPlainText(Feed feed) {
-		return feed.plainText.getValue()
+	public String getPlainText(Feed feed, String title) {
+		return feed.plainText.getValue().replaceFirst("\\Q"+TITLE_PLACEHOLDER+"\\E", title.toUpperCase())
 	}
 	
 }

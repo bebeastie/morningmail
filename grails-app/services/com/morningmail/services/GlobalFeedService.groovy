@@ -27,12 +27,12 @@ class GlobalFeedService implements FeedService, InitializingBean {
 		findService(feed).fetch(feed)
 	}
 	
-	public String getHtml(Feed feed) {
-		return findService(feed).getHtml(feed)
+	public String getHtml(Feed feed, String title) {
+		return findService(feed).getHtml(feed, title)
 	}
 	
-	public String getPlainText(Feed feed) {
-		return findService(feed).getPlainText(feed)
+	public String getPlainText(Feed feed, String title) {
+		return findService(feed).getPlainText(feed, title)
 	}
 	
 	private FeedService findService(Feed feed) {

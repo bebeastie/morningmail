@@ -21,17 +21,6 @@ class GlobalFeedController {
 		render(view:'index', model:[returnValue: "Fetch Complete"])
 	}
 	
-//	def yahooNews = {
-//		yahooNewsFeedService.fetch()
-//		render(view:'index', model:[returnValue: yahooNewsFeedService.getShortPlainText()])
-//	}
-//	
-//	def dictionaryWotd = {
-//		dictionaryWotdService.fetch()
-//		render(view:'index', model:[returnValue: dictionaryWotdService.getShortPlainText()])
-//	}
-	
-	
 	def fetch = {
 		def feed
 		
