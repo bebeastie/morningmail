@@ -2,6 +2,7 @@ package com.morningmail.services
 
 import com.morningmail.domain.*
 import org.springframework.beans.factory.InitializingBean
+import com.google.appengine.api.datastore.KeyFactory;
 
 class GlobalFeedService implements FeedService, InitializingBean {
 	public static final String ID_YAHOO_NEWS = "yahoo_news"
@@ -13,14 +14,9 @@ class GlobalFeedService implements FeedService, InitializingBean {
 	public static final String ID_BLOG_ERIC_RIES = "blog_eric_ries"
 	
 	void afterPropertiesSet() {
-//		TOP_NEWS = Interest.findByType(Interest.TYPE_TOP_NEWS)
-//		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
-//		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
-//		WOTD = Interest.findByType(Interest.TYPE_WOTD)
 	}
 	
 	FeedService yahooNewsFeedService
-	FeedService dictionaryWotdService
 	FeedService genericRssFeedService
 	
 	public void fetch(Feed feed) {
@@ -36,10 +32,8 @@ class GlobalFeedService implements FeedService, InitializingBean {
 	}
 	
 	private FeedService findService(Feed feed) {
-		if (feed.id.equals(ID_YAHOO_NEWS))
+		if (feed.systemName.equals(ID_YAHOO_NEWS))
 			return yahooNewsFeedService
-//		else if (feed.id.equals(ID_DICTIONARY_DOT_COM_WOTD))
-//			return dictionaryWotdService
 		else if (feed.type.equals(Feed.TYPE_GENERIC_RSS)) 
 			return genericRssFeedService
 	}

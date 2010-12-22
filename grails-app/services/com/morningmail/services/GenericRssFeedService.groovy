@@ -109,7 +109,8 @@ class GenericRssFeedService implements FeedService {
 				
 		feed.html = new Text(html.toString())
 		feed.plainText = new Text(text.toString().trim())
-		
+		feed.title = rss.getChannel().getTitle()
+		feed.description = rss.getChannel().getDescription()
 		feed.lastUpdated = new Date()
 	}
 	

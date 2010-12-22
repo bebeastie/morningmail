@@ -7,6 +7,7 @@ import com.morningmail.domain.Feed
 import com.morningmail.domain.PersonalFeed;
 import com.morningmail.services.FeedService
 import com.morningmail.services.PersonalFeedService
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text
 
 import java.util.Calendar;
@@ -75,9 +76,9 @@ class EmailService implements InitializingBean {
 	}
 	
 	void afterPropertiesSet() {
-		WEATHER = Interest.findByType(Interest.TYPE_WEATHER)
-		GOOGLE_CAL = Interest.findByType(Interest.TYPE_GOOGLE_CAL)
-		READ_LATER = Interest.findByType(Interest.TYPE_READ_LATER)
+		WEATHER = Interest.findBySystemName(Interest.ID_WEATHER)
+		GOOGLE_CAL = Interest.findBySystemName(Interest.ID_GOOGLE_CAL)
+		READ_LATER = Interest.findBySystemName(Interest.ID_READ_LATER)
 	}
 	
 	PersonalFeedService googleWeatherService
@@ -118,18 +119,18 @@ class EmailService implements InitializingBean {
 				String textFeed = new String()
 			
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
-					Feed feed = Feed.findById(interest.feedId)
+					Feed feed = Feed.findById(interest.globalFeedId)
 					
 					htmlFeed = globalFeedService.getHtml(feed, interest.displayName)
 					textFeed = globalFeedService.getPlainText(feed, interest.displayName)
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
 					PersonalFeedService pFeed;
 					
-					if (interest.feedId.equals(PersonalFeed.TYPE_GOOGLE_CAL)) {
+					if (interest.personalFeedId.equals(PersonalFeed.TYPE_GOOGLE_CAL)) {
 						pFeed = googleCalendarService
-					} else if (interest.feedId.equals(PersonalFeed.TYPE_WEATHER)) {
+					} else if (interest.personalFeedId.equals(PersonalFeed.TYPE_WEATHER)) {
 						pFeed = googleWeatherService
-					} else if (interest.feedId.equals(PersonalFeed.TYPE_READ_LATER)) {
+					} else if (interest.personalFeedId.equals(PersonalFeed.TYPE_READ_LATER)) {
 						pFeed = readLaterFeedService
 					} 
 					

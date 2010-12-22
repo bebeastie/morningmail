@@ -141,7 +141,7 @@ class UserController {
 		
 		System.out.println("Interests for user: " + user.id)
 		for (Interest interest : user.interests) {
-			System.out.println("Interest: " + interest.type)
+			System.out.println("Interest: " + interest.systemName)
 		}
 		
 		render(view:'index')

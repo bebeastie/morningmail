@@ -13,13 +13,20 @@ class Feed implements Serializable {
 	public static final String TYPE_GENERIC_RSS = "generic_rss"
 	
 	@Id
-	String id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Key id
+	
+	@Basic
+	String systemName
 	
 	@Basic
 	String type
 	
 	@Basic
 	String title
+	
+	@Basic
+	String description
 	
 	/*
 	 * Max # of stories to list

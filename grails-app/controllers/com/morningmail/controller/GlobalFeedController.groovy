@@ -1,9 +1,12 @@
 package com.morningmail.controller
+
 import com.morningmail.domain.*;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
 import com.morningmail.services.FeedService;
+import com.google.appengine.api.datastore.Key
+import com.google.appengine.api.datastore.KeyFactory;
 
 class GlobalFeedController {
 
@@ -15,7 +18,7 @@ class GlobalFeedController {
 		Queue queue = QueueFactory.getQueue("fetch-queue")
 		
 		for(Feed feed in feeds) {
-			queue.add(url("/globalFeed/fetch/$feed.id"))
+			queue.add(url("/globalFeed/fetch/"+KeyFactory.keyToString(feed.id)))
 		}
 
 		render(view:'index', model:[returnValue: "Fetch Complete"])
@@ -24,8 +27,13 @@ class GlobalFeedController {
 	def fetch = {
 		def feed
 		
-		if (params.id)
-			feed = Feed.findById(params.id)
+		if (params.id) {
+			try {
+				feed = Feed.findById(KeyFactory.stringToKey(params.id))
+			} catch (Exception e) {
+				log.error("Error looking up feed ", e)
+			}
+		}
 		
 		if (feed) {
 			globalFeedService.fetch(feed)
