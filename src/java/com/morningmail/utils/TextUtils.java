@@ -22,10 +22,12 @@ public class TextUtils {
         	foundWords++;
         }
         
-        text = text.substring(start,end);
-        text = text.trim();
-        
-        text = addEllipses ? text + "...":text;
+        if (end != BreakIterator.DONE) {
+        	text = text.substring(start,end);
+            text = text.trim();
+            text = addEllipses ? text + "...":text;
+        }
+
         return text;
 	}
 	
