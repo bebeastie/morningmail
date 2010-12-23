@@ -34,7 +34,7 @@ class Interest implements Serializable {
 	
 	//if a user created interest then this will be set
 	@Basic
-	User owner
+	Key owner
 	
 	@Basic
 	String feedStyle
