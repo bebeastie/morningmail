@@ -18,6 +18,7 @@ class GlobalFeedService implements FeedService, InitializingBean {
 	
 	FeedService yahooNewsFeedService
 	FeedService genericRssFeedService
+	FeedService romeFeedService
 	
 	public void fetch(Feed feed) {
 		findService(feed).fetch(feed)
@@ -35,7 +36,7 @@ class GlobalFeedService implements FeedService, InitializingBean {
 		if (feed.systemName.equals(ID_YAHOO_NEWS))
 			return yahooNewsFeedService
 		else if (feed.type.equals(Feed.TYPE_GENERIC_RSS)) 
-			return genericRssFeedService
+			return romeFeedService
 	}
 		
 	public String getHtml(Interest interest) {

@@ -54,6 +54,9 @@ class Feed implements Serializable {
 	String url
 	
 	@Basic
+	Text raw
+	
+	@Basic
 	Text html
 	
 	@Basic

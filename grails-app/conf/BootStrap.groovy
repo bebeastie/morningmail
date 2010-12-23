@@ -15,7 +15,7 @@ class BootStrap {
 		//START FEED CONFIG
 		
 		//Yahoo News
-		if (!Feed.findById(GlobalFeedService.ID_YAHOO_NEWS)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_YAHOO_NEWS)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_YAHOO_NEWS
 			feed.type = Feed.TYPE_SPECIFIC
@@ -28,7 +28,7 @@ class BootStrap {
 		}
 		
 		//Dictionary.com WOTD
-		if (!Feed.findById(GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD
 			feed.type = Feed.TYPE_GENERIC_RSS
@@ -42,7 +42,7 @@ class BootStrap {
 		}
 		
 		//TechCrunch
-		if (!Feed.findById(GlobalFeedService.ID_TECHCRUNCH)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_TECHCRUNCH)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_TECHCRUNCH
 			feed.type = Feed.TYPE_GENERIC_RSS
@@ -55,7 +55,7 @@ class BootStrap {
 		}
 
 		//A VC
-		if (!Feed.findById(GlobalFeedService.ID_AVC)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_AVC)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_AVC
 			feed.type = Feed.TYPE_GENERIC_RSS
@@ -68,7 +68,7 @@ class BootStrap {
 		}
 		
 		//Wall Street Journal US Home
-		if (!Feed.findById(GlobalFeedService.ID_WSJ_HOME_US)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_WSJ_HOME_US)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_WSJ_HOME_US
 			feed.type = Feed.TYPE_GENERIC_RSS
@@ -81,7 +81,7 @@ class BootStrap {
 		}
 		
 		//Blog: Steve Blank
-		if (!Feed.findById(GlobalFeedService.ID_BLOG_STEVE_BLANK)) {
+		if (!Feed.findBySystemName(GlobalFeedService.ID_BLOG_STEVE_BLANK)) {
 			Feed feed = new Feed()
 			feed.systemName = GlobalFeedService.ID_BLOG_STEVE_BLANK
 			feed.type = Feed.TYPE_GENERIC_RSS
