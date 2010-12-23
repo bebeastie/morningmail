@@ -5,91 +5,73 @@ import com.google.appengine.api.datastore.Key;
 import com.morningmail.services.*;
 
 class BootStrap {
-	
 
     def init = { servletContext ->
 		if (!User.findByEmail("blake.barnes@gmail.com")) {
 			//TODO
 		}
 		
-		//START FEED CONFIG
+		//START FEED CONFIG 
 		
 		//Yahoo News
-		if (!Feed.findBySystemName(GlobalFeedService.ID_YAHOO_NEWS)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_YAHOO_NEWS)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_YAHOO_NEWS
+			feed.systemName = GlobalFeedService.SN_YAHOO_NEWS
 			feed.type = Feed.TYPE_SPECIFIC
 			feed.url = "http://rss.news.yahoo.com/rss/topstories"
 			feed.title = "News"
-			feed.maxStories = 4
-			feed.maxWordsPerStory = 40
-			feed.includeItemMoreLink = false
 			feed.save()
 		}
 		
 		//Dictionary.com WOTD
-		if (!Feed.findBySystemName(GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_DICTIONARY_DOT_COM_WOTD)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD
+			feed.systemName = GlobalFeedService.SN_DICTIONARY_DOT_COM_WOTD
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://dictionary.reference.com/wordoftheday/wotd.rss"
 			feed.title = "Word of the Day"
-			feed.maxStories = 1
-			feed.maxWordsPerStory = Feed.NO_MAX
-			feed.includeItemMoreLink = false
-			feed.includeItemTitle = false
 			feed.save()
 		}
 		
 		//TechCrunch
-		if (!Feed.findBySystemName(GlobalFeedService.ID_TECHCRUNCH)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_TECHCRUNCH)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_TECHCRUNCH
+			feed.systemName = GlobalFeedService.SN_TECHCRUNCH
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://feeds.feedburner.com/TechCrunch"
 			feed.title = "TechCrunch"
-			feed.maxStories = 5
-			feed.maxWordsPerStory = 40
-			feed.includeItemMoreLink = false
 			feed.save()
 		}
 
 		//A VC
-		if (!Feed.findBySystemName(GlobalFeedService.ID_AVC)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_AVC)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_AVC
+			feed.systemName = GlobalFeedService.SN_AVC
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://feeds.feedburner.com/avc"
 			feed.title = "A VC"
-			feed.maxStories = 5
-			feed.maxWordsPerStory = 40
-			feed.includeItemMoreLink = false
 			feed.save()
 		}
 		
 		//Wall Street Journal US Home
-		if (!Feed.findBySystemName(GlobalFeedService.ID_WSJ_HOME_US)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_WSJ_HOME_US)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_WSJ_HOME_US
+			feed.systemName = GlobalFeedService.SN_WSJ_HOME_US
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://online.wsj.com/xml/rss/3_7011.xml"
 			feed.title = "WSJ: U.S. Homepage"
-			feed.maxStories = 4
-			feed.maxWordsPerStory = 40
-			feed.includeItemMoreLink = false
+
 			feed.save()
 		}
 		
 		//Blog: Steve Blank
-		if (!Feed.findBySystemName(GlobalFeedService.ID_BLOG_STEVE_BLANK)) {
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_STEVE_BLANK)) {
 			Feed feed = new Feed()
-			feed.systemName = GlobalFeedService.ID_BLOG_STEVE_BLANK
+			feed.systemName = GlobalFeedService.SN_BLOG_STEVE_BLANK
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://steveblank.com/feed/"
 			feed.title = "Steve Blank"
-			feed.maxStories = 5
-			feed.maxWordsPerStory = 40
-			feed.includeItemMoreLink = false
+
 			feed.save()
 		}
 		
@@ -111,81 +93,100 @@ class BootStrap {
 		//END FEED CONFIG
 		
 		//START INTEREST CONFIG
-		if (!Interest.findBySystemName(Interest.ID_TOP_NEWS)) {
+		if (!Interest.findBySystemName(Interest.SN_TOP_NEWS)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_TOP_NEWS
+			interest.systemName = Interest.SN_TOP_NEWS
 			interest.displayName = "Top News"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_YAHOO_NEWS).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_YAHOO_NEWS).id
+			interest.maxStories = 4
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_WEATHER)) {
+		if (!Interest.findBySystemName(Interest.SN_WEATHER)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_WEATHER
+			interest.systemName = Interest.SN_WEATHER
 			interest.displayName = "Weather"
 			interest.feedStyle = Interest.FEED_STYLE_PERSONAL
 			interest.personalFeedId = PersonalFeed.TYPE_WEATHER
 			interest.save()
 		}
 
-		if (!Interest.findBySystemName(Interest.ID_GOOGLE_CAL)) {
+		if (!Interest.findBySystemName(Interest.SN_GOOGLE_CAL)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_GOOGLE_CAL
+			interest.systemName = Interest.SN_GOOGLE_CAL
 			interest.displayName = "Google Calendar"
 			interest.feedStyle = Interest.FEED_STYLE_PERSONAL
 			interest.personalFeedId = PersonalFeed.TYPE_GOOGLE_CAL
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_WOTD)) {
+		if (!Interest.findBySystemName(Interest.SN_WOTD)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_WOTD
+			interest.systemName = Interest.SN_WOTD
 			interest.displayName = "Word of the Day"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_DICTIONARY_DOT_COM_WOTD).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_DICTIONARY_DOT_COM_WOTD).id
+			interest.maxStories = 1
+			interest.maxWordsPerStory = Interest.NO_MAX
+			interest.includeItemMoreLink = false
+			interest.includeItemTitle = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_TECHCRUNCH)) {
+		if (!Interest.findBySystemName(Interest.SN_TECHCRUNCH)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_TECHCRUNCH
+			interest.systemName = Interest.SN_TECHCRUNCH
 			interest.displayName = "TechCrunch"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_TECHCRUNCH).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_TECHCRUNCH).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_AVC)) {
+		if (!Interest.findBySystemName(Interest.SN_AVC)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_AVC
+			interest.systemName = Interest.SN_AVC
 			interest.displayName = "Blog: A VC"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_AVC).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_AVC).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_WSJ_US_HOME)) {
+		if (!Interest.findBySystemName(Interest.SN_WSJ_US_HOME)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_WSJ_US_HOME
+			interest.systemName = Interest.SN_WSJ_US_HOME
 			interest.displayName = "WSJ: U.S. Homepage"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_WSJ_HOME_US).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_WSJ_HOME_US).id
+			interest.maxStories = 4
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_BLOG_STEVE_BLANK)) {
+		if (!Interest.findBySystemName(Interest.SN_BLOG_STEVE_BLANK)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_BLOG_STEVE_BLANK
+			interest.systemName = Interest.SN_BLOG_STEVE_BLANK
 			interest.displayName = "Blog: Steve Blank"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.ID_BLOG_STEVE_BLANK).id
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_STEVE_BLANK).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
 			interest.save()
 		}
 		
-		if (!Interest.findBySystemName(Interest.ID_READ_LATER)) {
+		if (!Interest.findBySystemName(Interest.SN_READ_LATER)) {
 			Interest interest = new Interest()
-			interest.systemName = Interest.ID_READ_LATER
+			interest.systemName = Interest.SN_READ_LATER
 			interest.displayName = "Read Later Items"
 			interest.feedStyle = Interest.FEED_STYLE_PERSONAL
 			interest.personalFeedId = PersonalFeed.TYPE_READ_LATER

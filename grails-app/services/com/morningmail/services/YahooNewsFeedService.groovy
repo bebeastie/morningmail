@@ -1,96 +1,80 @@
 package com.morningmail.services
 
-import javax.persistence.EntityManager;
-
 import com.morningmail.services.FeedService;
 import com.morningmail.domain.Feed;
-import com.sun.cnpi.rss.parser.RssParser;
-import com.sun.cnpi.rss.parser.RssParserFactory;
-import com.sun.cnpi.rss.elements.Rss;
-import com.sun.cnpi.rss.elements.Item;
+import com.morningmail.domain.Interest;
+import com.morningmail.utils.HttpUtils;
 import javax.persistence.*;
-import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import com.google.appengine.api.datastore.Text
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup;
-import org.jsoup.select.Elements
-import org.jsoup.nodes.Element
-import org.springframework.beans.factory.InitializingBean
 import com.morningmail.utils.TextUtils
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.io.SyndFeedInput;
+import java.io.StringReader;
 
 class YahooNewsFeedService implements FeedService {
-	private static final TITLE_PLACEHOLDER = "^{title}^"
-	
+
 	public void fetch(Feed feed) {
+		feed.raw = new Text(HttpUtils.fetchUrl(feed.url))
+		feed.lastUpdated = new Date()
+	}
+	
+	public FeedService.FeedServiceHelper process(Feed feed, Interest interest) {
 		try {
+			SyndFeedInput input = new SyndFeedInput()
+			SyndFeed syndFeed = input.build(new StringReader(feed.raw.getValue()))
 		
-			RssParser parser = RssParserFactory.createDefault();
-			Rss rss = parser.parse(new URL(feed.url));
-			
-			Collection items = rss.getChannel().getItems();
+			List entries = syndFeed.getEntries()
 			
 			StringBuffer html = new StringBuffer()
 			StringBuffer text = new StringBuffer()
 			
 			html.append("<div>")
-			html.append("<b>").append(TITLE_PLACEHOLDER).append("</b><br/>")
+			html.append("<b>").append(interest.displayName.toUpperCase()).append("</b><br/>")
 			
-			text.append(TITLE_PLACEHOLDER).append("\n")
+			text.append(interest.displayName.toUpperCase()).append("\n")
 			
 			int storyCount = 0;
 			
-			if(items != null && !items.isEmpty()) {
+			if(entries != null && !entries.isEmpty()) {
 				//Iterate over our main elements. Should have one for each article		
-				for (Item item : items) {
-					if (storyCount >= feed.maxStories) 
+				for (SyndEntry entry : entries) {
+					if (storyCount >= interest.maxStories) 
 						break
 						
 					//html
-					String title = item.getTitle()
-					title = title.replaceAll("\\n","");
-					title = title.replaceAll("\\t","");
-					title = title.replaceAll("\\(AP\\)","");
-					title = title.replaceAll("\\(Reuters\\)","");
-					title = title.trim()
+					String iTitle = entry.getTitle()
+					iTitle = iTitle.replaceAll("\\n","");
+					iTitle = iTitle.replaceAll("\\t","");
+					iTitle = iTitle.replaceAll("\\(AP\\)","");
+					iTitle = iTitle.replaceAll("\\(Reuters\\)","");
+					iTitle = iTitle.trim()
 					
 					String htmlTitle = new StringBuffer("<a href=\"")
-						.append(item.getLink())
+						.append(entry.getLink())
 						.append("\">")
-						.append(title)
+						.append(iTitle)
 						.append("</a><br/>")
 						.toString()
 						
 					String textTitle = new StringBuffer()
-						.append(title)
+						.append(iTitle)
 						.append("\n")
 						.toString()
 					
 	
-					Document doc = Jsoup.parse(item.getDescription().getText());
+					Document doc = Jsoup.parse(entry.getDescription().getValue());
 					
 					String description = doc.text()
 					
-					if (feed.maxWordsPerStory != Feed.NO_MAX)
-						description = TextUtils.getSummary(description, feed.maxWordsPerStory, true)
+					if (interest.maxWordsPerStory != Interest.NO_MAX)
+						description = TextUtils.getSummary(description, interest.maxWordsPerStory, true)
 					
 					description = description.trim()
-					
-//						Element img = doc.select("img").first();
-//					if (img) {
-//						Integer newWidth = new Integer(img.attr("width"))/3
-//						Integer newHeight = new Integer(img.attr("height"))/3
-//						img.attr("width", newWidth.toString())
-//						img.attr("height", newHeight.toString())
-//						html+=img.outerHtml() 
-//					}
-//
-//					Element link = doc.select("a").first();
-//					if (link) {
-//						html+="<a href=\"" + link.attr("href") + "\">More</a>" 
-//					}
-//					html+="<br/>"
-					
-					if (feed.includeItemTitle) {
+										
+					if (interest.includeItemTitle) {
 						html.append(htmlTitle)
 						text.append(textTitle)
 					}
@@ -98,9 +82,9 @@ class YahooNewsFeedService implements FeedService {
 					html.append(description)
 					text.append(description)
 					
-					if (feed.includeItemMoreLink) { 
-						html.append("<a href=\""+item.getLink()+"\">More</a>")
-						text.append(item.getLink())
+					if (interest.includeItemMoreLink) { 
+						html.append("<a href=\""+entry.getLink()+"\">More</a>")
+						text.append(entry.getLink())
 					}
 					
 					html.append("<br/>")
@@ -116,22 +100,21 @@ class YahooNewsFeedService implements FeedService {
 				html = new StringBuffer()
 				text = new StringBuffer()
 			}
-					
-			feed.html = new Text(html.toString())
-			feed.plainText = new Text(text.toString().trim())
-			feed.title = rss.getChannel().getTitle()
-			feed.description = rss.getChannel().getDescription()
-			feed.lastUpdated = new Date()
+			
+			FeedService.FeedServiceHelper fsHelper = new FeedService.FeedServiceHelper() {
+				@Override
+				public String getPlainText() {
+					return text.toString()
+				}
+				
+				@Override
+				public String getHtml() {
+					return html.toString()
+				}
+			};
+			
 		} catch(Exception e) {
 			log.error("Problem parsing feed", e)
 		}
-	}
-	
-	public String getHtml(Feed feed, String title) {
-		return feed.html.getValue().replaceFirst("\\Q"+TITLE_PLACEHOLDER+"\\E", title.toUpperCase())
-	}
-	
-	public String getPlainText(Feed feed, String title) {
-		return feed.plainText.getValue().replaceFirst("\\Q"+TITLE_PLACEHOLDER+"\\E", title.toUpperCase())
 	}
 }

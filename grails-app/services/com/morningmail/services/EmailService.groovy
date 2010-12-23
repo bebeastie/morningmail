@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat
 import com.google.appengine.api.datastore.Key
 
 class EmailService implements InitializingBean {
+
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
 	public static Interest READ_LATER
@@ -76,9 +77,9 @@ class EmailService implements InitializingBean {
 	}
 	
 	void afterPropertiesSet() {
-		WEATHER = Interest.findBySystemName(Interest.ID_WEATHER)
-		GOOGLE_CAL = Interest.findBySystemName(Interest.ID_GOOGLE_CAL)
-		READ_LATER = Interest.findBySystemName(Interest.ID_READ_LATER)
+		WEATHER = Interest.findBySystemName(Interest.SN_WEATHER)
+		GOOGLE_CAL = Interest.findBySystemName(Interest.SN_GOOGLE_CAL)
+		READ_LATER = Interest.findBySystemName(Interest.SN_READ_LATER)
 	}
 	
 	PersonalFeedService googleWeatherService
@@ -120,9 +121,10 @@ class EmailService implements InitializingBean {
 			
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
 					Feed feed = Feed.findById(interest.globalFeedId)
-					
-					htmlFeed = globalFeedService.getHtml(feed, interest.displayName)
-					textFeed = globalFeedService.getPlainText(feed, interest.displayName)
+					FeedService.FeedServiceHelper fsHelper = 
+						globalFeedService.process(feed, interest)
+					htmlFeed = fsHelper.getHtml()
+					textFeed = fsHelper.getPlainText()
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
 					PersonalFeedService pFeed;
 					
