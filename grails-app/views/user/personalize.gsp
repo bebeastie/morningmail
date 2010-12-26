@@ -21,9 +21,16 @@
 		</style>
 	</head>
 	<body>
-		<h1>Hello ${user?.name}!</h1>
-		<br>
-		<g:form name="interests" action="personalize">
+	<g:form name="interests" action="personalize">
+	<table>
+		<tr>
+			<td align="left"><h1>Hello ${user?.name}!</h1></td>
+			<td align="right"><a href="/user/logout">Sign out</a></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="left">
+		
+		
 		<g:hiddenField name="saveInterests" value="${true}" />
 		<label for="interests">Select your interests from the list below or <a href="/interest/create">add your own</a>.</label> 
 		<select id="interests" multiple="multiple" name="interests[]" title="Click to Select an Interest"> 
@@ -41,10 +48,17 @@
 				</g:if>
 			</g:each>
 		</select>
-
-		<g:actionSubmit value="Save" action="personalize" />
+		</td></tr>
+		<tr>
+			<td colspan="2"><font color="red">Don't forget to press the save button.</font></td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<g:actionSubmit value="Save" action="personalize" />
+			
+		</td></tr>
+		</table>
 		</g:form>
-		
 				Drag this link to your toolbar:
 		<a class="bookmarklet" href="javascript: q = location.href;
 if (document.getSelection) {
