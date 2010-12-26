@@ -40,5 +40,6 @@ class Feed implements Serializable {
 		
     static constraints = {
     	id(visible:false)
+		url(nullable:false, blank:false)
 	}
 }

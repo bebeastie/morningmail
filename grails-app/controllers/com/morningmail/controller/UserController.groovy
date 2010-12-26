@@ -4,6 +4,7 @@ import com.morningmail.domain.*;
 import com.morningmail.services.*;
 import com.morningmail.utils.DateUtils;
 import java.text.ParseException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import java.net.URLDecoder
 
@@ -13,7 +14,8 @@ class UserController {
 	static final String LOGIN_DISPLAY_MINIMAL = "login_minimal"
 	
 	def googleCalendarService
-	
+	def interestService
+
 	/**
 	 * Called when we create a user
 	 */
@@ -100,27 +102,22 @@ class UserController {
 			return
 		}
 				
+		
 		User user = User.findByEmail(session.userEmail)
-				
+
+		def interestList = interestService.getAll(user)
+		def interestMap = new HashMap<Key, Interest>()
+		for(Interest i: interestList) 
+			interestMap.put(i.id, i)	
+		
 		if(params.saveInterests) {
-			user.interests.clear()
-			
 			def interests = params.get("interests[]")
-			if (interests) {
-				//there could be only one interest
-				//so we need to check if we should 
-				//loop through or just take the one we have
-				if (interests instanceof String) {
-					user.interests.add(KeyFactory.stringToKey(interests))
-				} else {
-					for (String interest: interests)
-						user.interests.add(KeyFactory.stringToKey(interest))
-				}
-			}
+			if (interests) 
+				interestService.setSelected(user, interests)
 		} 
 
-	 
-		render(view:'personalize', model:[user:user])
+		render(view:'personalize', model:[user:user, 
+			interestList:interestList, interestMap:interestMap])
 	}
 
 	/**

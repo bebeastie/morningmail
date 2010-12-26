@@ -60,6 +60,7 @@ class Interest implements Serializable {
 	String personalFeedId
 	
     static constraints = {
-    	id visible:false
+    	id(visible:false)
+		displayName(nullable:false, blank:false)
 	}
 }

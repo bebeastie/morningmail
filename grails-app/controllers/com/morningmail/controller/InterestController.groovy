@@ -5,6 +5,8 @@ import com.google.appengine.api.datastore.KeyFactory
 
 class InterestController {
 
+	def interestService
+	
 	def create = {
 		if (!session.userEmail) {
 			redirect(uri:'/')
@@ -12,6 +14,7 @@ class InterestController {
 		}
 		
 		Interest interest
+		Feed feed
 		
 		if (params.save) {
 			interest = new Interest()
@@ -26,25 +29,32 @@ class InterestController {
 			interest.includeItemMoreLink = false
 			interest.includeItemTitle = true
 			
-			System.out.println("Max Stories: " + interest.maxStories)
 			if (interest.validate()) {
 				//now create or find feed
-				Feed feed = Feed.findByUrl(params.url)
+				feed = Feed.findByUrl(params.url)
 				if (!feed) {
+					feed = new Feed()
+					feed.type = Feed.TYPE_GENERIC_RSS
+					feed.url = params.url
+					
 					Feed.withTransaction() {
-						feed = new Feed()
-						feed.type = Feed.TYPE_GENERIC_RSS
-						feed.url = params.url
 						feed.save(flush:true)
 					}
 
 				}		
 				interest.globalFeedId = feed.id
-				interest.save()
-				redirect(controller:'user', action:'personalize')
-				return
+				
+				if (feed.id != null) {
+					Interest.withTransaction() {
+						interest.save(flush:true)
+					}
+					interestService.add(u, interest)
+					
+					redirect(controller:'user', action:'personalize')
+					return
+				}
 			}
 		} 
-		render(view:"create", model:[interest:interest])
+		render(view:"create", model:[interest:interest, url:params.url])
 	}
 }

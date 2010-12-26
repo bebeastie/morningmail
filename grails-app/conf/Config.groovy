@@ -46,6 +46,7 @@ grails.spring.bean.packages = []
 grails.views.javascript.library="jquery"
 
 google.appengine.application="apponthebowery"
+google.appengine.security.requireAdmin = ["/batchEmail/*", "/email/*", "/globalFeed/*"]
 
 // set per-environment serverURL stem for creating absolute links
 environments {
