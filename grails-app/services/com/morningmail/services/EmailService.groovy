@@ -192,7 +192,9 @@ class EmailService implements InitializingBean {
 
             msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
-							 new InternetAddress(email.user.email, email.user.name));
+							new InternetAddress(email.user.email, email.user.name));
+			msg.addRecipient(Message.RecipientType.BCC, 
+							new InternetAddress("bebeastie@gmail.com", "Blake Barnes"));
 			msg.setSubject(subject);
            
             MimeMultipart mp = new MimeMultipart();

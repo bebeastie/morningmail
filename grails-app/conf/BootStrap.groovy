@@ -151,7 +151,7 @@ class BootStrap {
 		if (!Interest.findBySystemName(Interest.SN_AVC)) {
 			Interest interest = new Interest()
 			interest.systemName = Interest.SN_AVC
-			interest.displayName = "Blog: A VC"
+			interest.displayName = "A VC"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
 			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_AVC).id
 			interest.maxStories = 5
@@ -175,7 +175,7 @@ class BootStrap {
 		if (!Interest.findBySystemName(Interest.SN_BLOG_STEVE_BLANK)) {
 			Interest interest = new Interest()
 			interest.systemName = Interest.SN_BLOG_STEVE_BLANK
-			interest.displayName = "Blog: Steve Blank"
+			interest.displayName = "Steve Blank"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
 			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_STEVE_BLANK).id
 			interest.maxStories = 5
