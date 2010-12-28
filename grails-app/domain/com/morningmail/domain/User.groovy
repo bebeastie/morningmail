@@ -68,6 +68,10 @@ class User implements Serializable {
 	
     static constraints = {
     	id(visible:false)
+		name(nullable:false, blank:false)
+		password(nullable:false, blank:false)
+		zipCode(nullable:false, blank:false, matches:"\\d{5}(-\\d{4})?")
 		email(email:true, nullable: false, blank:false)	
+		deliveryTime(nullable:false)
 	}
 }

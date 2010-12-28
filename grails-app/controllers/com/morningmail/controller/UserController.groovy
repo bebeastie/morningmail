@@ -20,36 +20,44 @@ class UserController {
 	 * Called when we create a user
 	 */
 	def register = {	
-		User user
+		User user = new User()
+		def existingUser = false
+		
+		if (params.regEmail)
+			existingUser = User.findByEmail(params.regEmail)
+	
+		user.lastRenderedDate = new Date(0);
+		user.name = params.name
+		user.email = params.regEmail
+		user.zipCode = params.zipCode
+		user.localDeliveryTime = params.deliveryTime
+		user.timeZone = params.timeZone
+		user.password = params.regPassword
 		
 		try {
-			user = User.findByEmail(params.regEmail)
-			
-			if(!user) {
-				user = new User()
-				user.lastRenderedDate = new Date(0);
-				user.name = params.name
-				user.email = params.regEmail
-				user.zipCode = params.zipCode
-				user.localDeliveryTime = params.deliveryTime
-				user.timeZone = params.timeZone
-				user.password = params.regPassword
-				
-				user.deliveryTime = DateUtils.
-					getNormalizedDeliveryTime(user.localDeliveryTime, DateUtils.getOffsetTimeZone(user.timeZone))
-					
-				if (user.validate() && "tufts".equals(params.inviteCode)) {
-					user.id = KeyFactory.createKey(User.class.getSimpleName(), user.email)
-					user.save()
-					session.userEmail = user.email
-					redirect(action:'personalize', model:[user:user])
-				} 
-			}
+			user.deliveryTime = DateUtils.
+				getNormalizedDeliveryTime(user.localDeliveryTime, DateUtils.getOffsetTimeZone(user.timeZone))
 		} catch (Exception e) {
-			log.error("Error processing registration", e)
+			//do nothing, the User domain object will throw a validation error	
 		}
-		render(view:'/index', model:[user:user])
-		return
+		
+		boolean correctCode = "tufts".equals(params.inviteCode)
+				
+		if (!correctCode)
+			user.errors.rejectValue('', 'Uh oh, wrong invite code')
+			
+		if (existingUser) 
+			user.errors.rejectValue('', 'That email address is already registered')
+			
+		if (user.validate() && correctCode && !existingUser) {
+			user.id = KeyFactory.createKey(User.class.getSimpleName(), user.email)
+			user.save()
+			session.userEmail = user.email
+			redirect(action:'personalize', model:[user:user])
+			return
+		}
+			
+		render(view:'/index', model:[user:user, inviteCode:params.inviteCode])
 	}
 	
 	def login = {
@@ -101,8 +109,7 @@ class UserController {
 			redirect(uri:'/')
 			return
 		}
-				
-		
+				 
 		User user = User.findByEmail(session.userEmail)
 
 		def interestList = interestService.getAll(user)

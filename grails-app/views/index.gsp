@@ -9,14 +9,16 @@
 %>
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="/css/main.css"/>
 		<title>Wakeup E-mail Signup - Step 1</title>
 	</head>
 	<body>
-	<table border="1">
+	<table>
 		<tr>
 			<td valign="top" align="center">
 				<!--  BEGIN NEW USER AREA -->
 				<g:form controller="user" action="register">
+				<g:hiddenField name="save" value="${true}" />
 				
 				<table>
 					<tr>
@@ -27,14 +29,14 @@
 					<tr>
 						<td colspan="2">
 							<g:hasErrors bean="${user}">
-								<g:renderErrors bean="${user}" as="list" />
+								<div class="errors"><g:renderErrors bean="${user}" as="list" /></div>
 							</g:hasErrors>
 						</td>
 					</tr>
 					<tr>
 						<td>Invite code:</td>
 						<td>
-							<input id="inviteCode" type="text" name="inviteCode" value="" title="inviteCode" spellcheck="false"/>
+							<input id="inviteCode" type="text" name="inviteCode" value="${inviteCode}" title="inviteCode" spellcheck="false"/>
 						</td>
 					</tr>
 					<tr>
