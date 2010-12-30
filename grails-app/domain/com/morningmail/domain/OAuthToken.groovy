@@ -1,7 +1,5 @@
 package com.morningmail.domain
 
-
-
 import javax.persistence.*;
 import com.google.appengine.api.datastore.Key;
 
@@ -9,10 +7,11 @@ import com.google.appengine.api.datastore.Key;
 class OAuthToken implements Serializable {
 
 	public static final String SERVICE_GOOGLE = "google"
+	public static final String SERVICE_TWITTER = "twitter"
 	
 	public static final String TYPE_REQUEST_TOKEN = "request_token"
 	public static final String TYPE_ACCESS_TOKEN = "access_token"
-	
+
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Key id
@@ -34,6 +33,9 @@ class OAuthToken implements Serializable {
 	
 	@Basic 
 	String type
+	
+	@Basic
+	String authorizationUrl
 	
     static constraints = {
     	id(visible:false)
