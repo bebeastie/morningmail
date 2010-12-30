@@ -3,12 +3,15 @@ import com.morningmail.services.GlobalFeedService;
 import com.morningmail.domain.*;
 import com.google.appengine.api.datastore.Key;
 import com.morningmail.services.*;
+import grails.util.Environment;
 
 class BootStrap {
-
+	def messageSource
+	
     def init = { servletContext ->
-		if (!User.findByEmail("blake.barnes@gmail.com")) {
-			//TODO
+		if(Environment.getCurrent() == Environment.PRODUCTION){
+			messageSource.basenames = ['WEB-INF/grails-app/i18n/messages']
+			messageSource.clearCache()
 		}
 		
 		//START FEED CONFIG 

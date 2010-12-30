@@ -37,6 +37,7 @@ class GlobalFeedController {
 		
 		if (feed) {
 			globalFeedService.fetch(feed)
+			log.info("Just fetched for: $feed.id . Last updated date is now: $feed.lastUpdated")
 			render(view:'index', model:[returnValue: "Fetch Complete"])
 		} else {
 			log.error("Couldn't find feed with id: $params.id")
