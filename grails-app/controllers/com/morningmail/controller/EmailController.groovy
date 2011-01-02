@@ -1,9 +1,13 @@
 package com.morningmail.controller
 
 import com.morningmail.domain.User
+import com.morningmail.domain.Newsletter
 import com.morningmail.domain.Email
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
 
 class EmailController {
@@ -11,19 +15,19 @@ class EmailController {
 	def emailService
 	
 	def fetch = {
-		User u = User.findById(params.id)
-		emailService.fetchPersonalFeeds(u)
+		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.id))
+		emailService.fetchPersonalFeeds(nl)
 		render(view:'index', model:[returnValue:"Fetch Complete"])
 	}
 	
 	def render = {
-		User u = User.findById(params.id)
-		Email email = emailService.render(u)
+		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.id))
+		Email email = emailService.render(nl)
 		render(view:'index', model:[returnValue:email.html.getValue()])
 	}
 	
 	def send = {
-		Email e = Email.findById(params.id)
+		Email e = Email.findById(KeyFactory.stringToKey(params.id))
 		emailService.send(e)
 		render(view:'index', model:[returnValue:"Send Complete"])
 	}

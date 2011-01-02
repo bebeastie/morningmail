@@ -35,12 +35,4 @@ class GlobalFeedService implements FeedService, InitializingBean {
 		else if (feed.type.equals(Feed.TYPE_GENERIC_RSS)) 
 			return romeFeedService
 	}
-		
-	public String getHtml(Interest interest) {
-		
-	}
-	
-	public String getPlainText(Interest interest) {
-		
-	}
 }

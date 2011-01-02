@@ -4,8 +4,8 @@
 	def timeZones = DateUtils.TIME_ZONES
 	def deliveryTimes = DateUtils.DELIVERY_TIMES
 
-	def selectedTimeZone = user ? user.timeZone : "Eastern"
-	def selectedLocalDeliveryTime = user ? user.localDeliveryTime : "8:00 AM"
+	def selectedTimeZone = newsletter ? newsletter.timeZone : "Eastern"
+	def selectedLocalDeliveryTime = newsletter ? newsletter.localDeliveryTime : "8:00 AM"
 %>
 <html>
 	<head>
@@ -28,8 +28,11 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<g:hasErrors bean="${user}">
-								<div class="errors"><g:renderErrors bean="${user}" as="list" /></div>
+							<g:hasErrors>
+								<div class="errors">
+									<g:renderErrors bean="${user}" as="list" />
+									<g:renderErrors bean="${newsletter}" as="list" />
+								</div>
 							</g:hasErrors>
 						</td>
 					</tr>

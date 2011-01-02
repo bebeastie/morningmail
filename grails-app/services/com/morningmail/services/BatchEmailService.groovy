@@ -7,7 +7,8 @@ import java.util.Date
 import java.util.Calendar
 import com.morningmail.utils.DateUtils
 import com.morningmail.domain.User;
-import com.morningmail.domain.Email
+import com.morningmail.domain.Newsletter;
+import com.morningmail.domain.Email;
 import com.google.appengine.api.datastore.KeyFactory
 
 class BatchEmailService {
@@ -26,7 +27,7 @@ class BatchEmailService {
 	 * email prepared within the past 5 hours.
 	 * @return
 	 */
-	public List<String> getUsersToRender() {
+	public List<String> getNewslettersToRender() {
 		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
 		
 		Date now = Calendar.getInstance().getTime();
@@ -36,8 +37,8 @@ class BatchEmailService {
 				
 		Date lastRenderedDate = new Date(now.getTime() - PREVIOUS_PERIOD)
 		
-		Query q = em.createQuery("select u from User u where u.deliveryTime >= :lowerDate" +
-			 " and u.deliveryTime <= :upperDate")
+		Query q = em.createQuery("select n from Newsletter n where n.deliveryTime >= :lowerDate" +
+			 " and n.deliveryTime <= :upperDate")
 		q.setParameter("lowerDate", lowerDate);
 		q.setParameter("upperDate", upperDate);
 		q.setMaxResults(75)
@@ -49,11 +50,11 @@ class BatchEmailService {
 
 		List<User> dbResults = q.getResultList()
 		
-		for (Iterator<User> it = dbResults.iterator(); it.hasNext(); ) {
-			User u = it.next()
+		for (Iterator<Newsletter> it = dbResults.iterator(); it.hasNext(); ) {
+			Newsletter n = it.next()
 			
-			if (u.lastRenderedDate < lastRenderedDate)
-				validKeys.add(KeyFactory.keyToString(u.id))
+			if (n.lastRenderedDate < lastRenderedDate)
+				validKeys.add(KeyFactory.keyToString(n.id))
 		}
 		return validKeys
 

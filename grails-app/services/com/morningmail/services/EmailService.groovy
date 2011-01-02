@@ -2,6 +2,7 @@ package com.morningmail.services
 
 import com.morningmail.domain.Interest
 import com.morningmail.domain.User
+import com.morningmail.domain.Newsletter
 import com.morningmail.domain.Email
 import com.morningmail.domain.Feed
 import com.morningmail.domain.PersonalFeed;
@@ -88,23 +89,23 @@ class EmailService implements InitializingBean {
 	
 	FeedService globalFeedService
 	
-	public void fetchPersonalFeeds(User u){
+	public void fetchPersonalFeeds(Newsletter nl){
 		try {
-			if (u.interests.contains(GOOGLE_CAL.id)) 
-				googleCalendarService.fetch(u)
+			if (nl.interests.contains(GOOGLE_CAL.id)) 
+				googleCalendarService.fetch(nl.owner)
 			
-			if (u.interests.contains(WEATHER.id))
-				googleWeatherService.fetch(u)
+			if (nl.interests.contains(WEATHER.id))
+				googleWeatherService.fetch(nl.owner)
 				
-			if (u.interests.contains(READ_LATER.id))
-				readLaterFeedService.fetch(u)
+			if (nl.interests.contains(READ_LATER.id))
+				readLaterFeedService.fetch(nl.owner)
 			
 		} catch(Exception e) {
 			log.error("Can't fetch personal feeds for user $u \n", e)
 		}	
 	}
 	
-	public Email render(User u) {
+	public Email render(Newsletter nl) {
 		try {
 		
 			StringBuffer text = new StringBuffer()
@@ -113,7 +114,7 @@ class EmailService implements InitializingBean {
 			html.append(getHtmlHeader())
 			text.append(getPlainTextHeader())
 			
-			for (Key k: u.interests) {
+			for (Key k: nl.interests) {
 				Interest interest = Interest.findById(k)
 				
 				String htmlFeed = new String()
@@ -137,8 +138,8 @@ class EmailService implements InitializingBean {
 					} 
 					
 					if (pFeed != null) {
-						htmlFeed = pFeed.getHtml(u)
-						textFeed = pFeed.getPlainText(u)
+						htmlFeed = pFeed.getHtml(nl.owner)
+						textFeed = pFeed.getPlainText(nl.owner)
 					} else {
 						log.error("Couldn't find service for interest " + interest)
 					}
@@ -166,12 +167,12 @@ class EmailService implements InitializingBean {
 		
 			//need to set deliverydate
 				
-			email.user = u
+			email.user = nl.owner
 			
 			//add a reference to the user
-			u.emails.add(email)
+			nl.owner.emails.add(email)
 			//mark the user as well
-			u.lastRenderedDate = Calendar.getInstance().getTime()
+			nl.lastRenderedDate = Calendar.getInstance().getTime()
 			
 			email.save()
 

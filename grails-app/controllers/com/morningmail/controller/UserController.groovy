@@ -8,14 +8,21 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import java.net.URLDecoder
 
+import javax.persistence.EntityManager;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+
 class UserController {
 	static allowedMethods = [completeGoogAuth: ["POST", "GET"]]
 	
 	static final String LOGIN_DISPLAY_MINIMAL = "login_minimal"
 	
+	def entityManagerFactory
+	EntityManager em
+	
 	def googleCalendarService
 	def interestService
-
+	def newsletterService
+	
 	/**
 	 * Called when we create a user
 	 */
@@ -26,20 +33,10 @@ class UserController {
 		if (params.regEmail)
 			existingUser = User.findByEmail(params.regEmail)
 	
-		user.lastRenderedDate = new Date(0);
 		user.name = params.name
 		user.email = params.regEmail
 		user.zipCode = params.zipCode
-		user.localDeliveryTime = params.deliveryTime
-		user.timeZone = params.timeZone
 		user.password = params.regPassword
-		
-		try {
-			user.deliveryTime = DateUtils.
-				getNormalizedDeliveryTime(user.localDeliveryTime, DateUtils.getOffsetTimeZone(user.timeZone))
-		} catch (Exception e) {
-			//do nothing, the User domain object will throw a validation error	
-		}
 		
 		boolean correctCode = "tufts".equals(params.inviteCode)
 				
@@ -48,16 +45,30 @@ class UserController {
 			
 		if (existingUser) 
 			user.errors.rejectValue('', 'That email address is already registered')
-			
-		if (user.validate() && correctCode && !existingUser) {
+		
+		Newsletter nl = Newsletter.create(
+			user, "", params.deliveryTime, params.timeZone)
+		
+		boolean validUser = user.validate()
+		boolean validNewsletter = nl.validate();	
+		
+		if (validUser && validNewsletter && correctCode && !existingUser) {
 			user.id = KeyFactory.createKey(User.class.getSimpleName(), user.email)
-			user.save()
+			
+			User.withTransaction() {
+				user.save(flush:true)
+			}
+			
 			session.userEmail = user.email
-			redirect(action:'personalize', model:[user:user])
+			
+			params.title = "" //this will be used to name the newsletter
+			
+			redirect(controller:'newsletter', action:'create', 
+				params:params)
 			return
 		}
 			
-		render(view:'/index', model:[user:user, inviteCode:params.inviteCode])
+		render(view:'/index', model:[user:user, newsletter:nl, inviteCode:params.inviteCode])
 	}
 	
 	def login = {
@@ -79,7 +90,8 @@ class UserController {
 					if (params.jump) {
 						redirect(uri:URLDecoder.decode(params.jump, "UTF-8"))	
 					} else {
-						redirect(action:'personalize', model:[user:user])
+						redirect(controller:'dashboard',
+							action:'index', model:[user:user])
 					}
 					return
 				}

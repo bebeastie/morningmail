@@ -19,7 +19,7 @@ class BatchEmailController {
 	}
 	
 	def prepare = {
-		List<String> userKeys = batchEmailService.getUsersToRender()
+		List<String> userKeys = batchEmailService.getNewslettersToRender()
 		
 		for (String key: userKeys) {
 			log.info("Prepare and render email for user: " + key)
