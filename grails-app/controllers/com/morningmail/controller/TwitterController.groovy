@@ -3,11 +3,15 @@ package com.morningmail.controller
 import com.morningmail.domain.User
 import com.morningmail.domain.OAuthToken
 
-class OauthController {
+class TwitterController {
 	
 	def twitterUserTimelineService
 	
-	def twitterGenerate = {
+	def index = {
+		render(view:'index', model:[returnValue:"OK"])
+	}
+	
+	def generate = {
 		if (!session.userEmail) {
 			redirect(uri:'/')
 			return
@@ -20,7 +24,7 @@ class OauthController {
 		render(view:'index', model:[returnValue:token.authorizationUrl])
 	}
 		
-	def twitterCallback = {
+	def callback = {
 		twitterUserTimelineService.upgradeToken(params.oauth_token, params.oauth_verifier)
 		render(view:'index', model:[returnValue: "OK"])
 	}

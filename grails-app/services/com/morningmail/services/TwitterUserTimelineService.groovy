@@ -30,7 +30,7 @@ class TwitterUserTimelineService implements PersonalFeedService, OAuthService{
 			.setOAuthConsumerSecret("hrPZTlhrwBjuV8VB6bkJDrGIXCVl3PpsDgUv522uNY")
 
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance()
-		RequestToken requestToken = twitter.getOAuthRequestToken("http://apponthebowery.appspot.com/oauth/twitterCallback");
+		RequestToken requestToken = twitter.getOAuthRequestToken();
 		
 		OAuthToken token = new OAuthToken()
 		token.service = OAuthToken.SERVICE_TWITTER
@@ -69,9 +69,9 @@ class TwitterUserTimelineService implements PersonalFeedService, OAuthService{
 			em.merge(oAuthToken)
 		}catch (TwitterException te) {
 			if(401 == te.getStatusCode()){
-				System.out.println("Unable to get the access token.");
+				log.error("Unable to get the access token.");
 			}else{
-				te.printStackTrace();
+				log.error("Unable to get the acess token.",te)
 			}
 		}
 		return oAuthToken
@@ -91,14 +91,23 @@ class TwitterUserTimelineService implements PersonalFeedService, OAuthService{
 				.setOAuthConsumerSecret("hrPZTlhrwBjuV8VB6bkJDrGIXCVl3PpsDgUv522uNY")
 				.setOAuthAccessToken(token.getToken())
 				.setOAuthAccessTokenSecret(token.getSecret())
-				
+				.setDebugEnabled(true)
+				.setIncludeEntitiesEnabled(true)
 			Twitter twitter = new TwitterFactory(cb.build()).getInstance()
 			twitter4j.User tUser = twitter.verifyCredentials();
-			List<Status> statuses = twitter.getFriendsTimeline()
-			System.out.println("Showing @" + tUser.getScreenName() + "'s user timeline.");
+			
+			/*We are going to gather all of the day's statuses, 
+			 * up to a limit of 800 unique statuses
+			 * (4 requests * 200 statuses/request). Retweets are not  
+			 * included in this count and actually 
+			 */
+			List<Status> statuses = twitter.getHomeTimeline();
+			
 			for (Status status : statuses) {
-				for(java.net.URL url: status.getURLs()) {
-					System.out.println("+"+url.toString())
+
+				for (twitter4j.URLEntity entity: status.getURLEntities()) {
+					System.out.println(entity.getExpandedURL());
+					System.out.println(entity.getURL());
 				}
 				System.out.println("-@" + status.getUser().getScreenName() + " - " + status.getText());
 			}

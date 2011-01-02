@@ -16,8 +16,27 @@ import org.apache.http.params.BasicHttpParams;
 
 import com.morningmail.utils.protocol.GAEConnectionManager;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
 public class HttpUtils {
 
+	public static String fetchUrlBasic(String fetchUrl) throws ClientProtocolException, IOException {
+		URL url = new URL(fetchUrl);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+		String line;
+		
+		StringBuffer buffer = new StringBuffer();
+		while ((line = reader.readLine()) != null) {
+			buffer.append(line);
+		}
+		reader.close();
+		return buffer.toString();
+	}
+	
 	public static String fetchUrl(String url) throws ClientProtocolException, IOException {
 		BasicHttpParams params = new BasicHttpParams();
 
