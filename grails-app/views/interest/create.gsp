@@ -33,7 +33,7 @@
 			</tr>
 
 			<tr>
-			<td align="left"><a href="/user/personalize">Back</a></td>
+			<td align="left"><a href="/dashboard">Back</a></td>
 			<td align="right"><g:submitButton name="save" value="Save"/></td>
 			</tr>			
 		</table>
