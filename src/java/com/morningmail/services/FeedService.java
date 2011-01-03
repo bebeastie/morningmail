@@ -12,7 +12,7 @@ public interface FeedService {
 	
 	public void fetch(Feed feed); 
 	
-	public FeedServiceHelper process(Feed feed, Interest interest);
+	public FeedServiceHelper process(Feed feed, Interest interest, String emailId);
 	
 }
 

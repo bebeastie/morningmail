@@ -2,6 +2,7 @@ package com.morningmail.services
 
 import com.morningmail.services.FeedService;
 import com.morningmail.domain.Feed;
+import com.morningmail.domain.Email;
 import com.morningmail.domain.Interest;
 import com.morningmail.utils.HttpUtils;
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.io.SyndFeedInput;
 import java.io.StringReader;
+import com.morningmail.utils.LinkUtils;
 
 class YahooNewsFeedService implements FeedService {
 
@@ -21,7 +23,7 @@ class YahooNewsFeedService implements FeedService {
 		feed.lastUpdated = new Date()
 	}
 	
-	public FeedService.FeedServiceHelper process(Feed feed, Interest interest) {
+	public FeedService.FeedServiceHelper process(Feed feed, Interest interest, String emailId) {
 		try {
 			SyndFeedInput input = new SyndFeedInput()
 			SyndFeed syndFeed = input.build(new StringReader(feed.raw.getValue()))
@@ -53,7 +55,7 @@ class YahooNewsFeedService implements FeedService {
 					iTitle = iTitle.trim()
 					
 					String htmlTitle = new StringBuffer("<a href=\"")
-						.append(entry.getLink())
+						.append(LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink()))
 						.append("\">")
 						.append(iTitle)
 						.append("</a><br/>")
@@ -83,7 +85,7 @@ class YahooNewsFeedService implements FeedService {
 					text.append(description)
 					
 					if (interest.includeItemMoreLink) { 
-						html.append("<a href=\""+entry.getLink()+"\">More</a>")
+						html.append("<a href=\""+LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
 						text.append(entry.getLink())
 					}
 					

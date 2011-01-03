@@ -25,8 +25,8 @@ class GlobalFeedService implements FeedService, InitializingBean {
 		findService(feed).fetch(feed)
 	}
 	
-	public FeedService.FeedServiceHelper process(Feed feed, Interest interest) {
-		return findService(feed).process(feed, interest)
+	public FeedService.FeedServiceHelper process(Feed feed, Interest interest, String emailId) {
+		return findService(feed).process(feed, interest,  emailId)
 	}
 	
 	private FeedService findService(Feed feed) {

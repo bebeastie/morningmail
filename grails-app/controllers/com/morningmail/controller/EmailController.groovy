@@ -3,6 +3,9 @@ package com.morningmail.controller
 import com.morningmail.domain.User
 import com.morningmail.domain.Newsletter
 import com.morningmail.domain.Email
+import com.morningmail.domain.LinkClick
+import com.morningmail.domain.Feed
+import com.morningmail.domain.Interest
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.datastore.Key;
@@ -46,5 +49,37 @@ class EmailController {
 	
 	def keepAlive = {
 		render(view:"index", model:[returnValue:"Keep Alive"])
+	}
+	
+	def link = {
+		String decodedUrl
+		try {
+			decodedUrl = URLDecoder.decode(params.url, "UTF-8")
+		} catch (Exception e) {
+			log.error("Had trouble decoding the URL.",e)
+		}
+		
+		try {
+			LinkClick lc = new LinkClick()
+			Email email = Email.findById(KeyFactory.stringToKey(params.email))
+			lc.email = email
+			lc.user = email.user
+			lc.interest = Interest.findById(KeyFactory.stringToKey(params.interest))
+			lc.feed = Feed.findById(KeyFactory.stringToKey(params.feed))
+			lc.url = decodedUrl
+			lc.timeClicked = new Date();
+			if (lc.validate())
+				lc.save()
+			else
+				log.error("Had trouble saving LinkClick" + lc.errors.allErrors);
+		} catch (Exception e) {
+			log.error("Had trouble creating LinkClick.",e)
+		}
+		
+		if (decodedUrl) 
+			redirect(uri:decodedUrl)
+		else 
+			render(view:"forwardError")
+		
 	}
 }

@@ -54,10 +54,10 @@ environments {
         grails.serverURL = "http://www.apponthebowery.appspot.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080/"
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080/"
     }
 
 }

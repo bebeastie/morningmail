@@ -114,6 +114,12 @@ class EmailService implements InitializingBean {
 			html.append(getHtmlHeader())
 			text.append(getPlainTextHeader())
 			
+			//now time to save it
+			
+			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), nl.owner.email)
+				.addChild(Email.class.getSimpleName(), UUID.randomUUID().toString().replaceAll('-', ''))
+				.getKey()
+				
 			for (Key k: nl.interests) {
 				Interest interest = Interest.findById(k)
 				
@@ -123,7 +129,7 @@ class EmailService implements InitializingBean {
 				if (interest.feedStyle == Interest.FEED_STYLE_GLOBAL) {
 					Feed feed = Feed.findById(interest.globalFeedId)
 					FeedService.FeedServiceHelper fsHelper = 
-						globalFeedService.process(feed, interest)
+						globalFeedService.process(feed, interest, KeyFactory.keyToString(emailId))
 					htmlFeed = fsHelper.getHtml()
 					textFeed = fsHelper.getPlainText()
 				} else if (interest.feedStyle == Interest.FEED_STYLE_PERSONAL) {
@@ -156,10 +162,9 @@ class EmailService implements InitializingBean {
 			
 			html.append(getHtmlFooter())
 			text.append(getPlainTextFooter())
-			
-			//now time to save it
 			Email email = new Email()
-		
+			email.id = emailId
+			email.user = nl.owner
 			email.html = new Text(html.toString())
 			email.plainText = new Text(text.toString().trim())
 			email.status = Email.STATUS_PENDING
@@ -167,7 +172,7 @@ class EmailService implements InitializingBean {
 		
 			//need to set deliverydate
 				
-			email.user = nl.owner
+			
 			
 			//add a reference to the user
 			nl.owner.emails.add(email)
@@ -178,7 +183,7 @@ class EmailService implements InitializingBean {
 
 			return email
 		} catch (Exception e) {
-			log.error("Can't render email for user $u", e)
+			log.error("Can't render email for newsletter $nl", e)
 		}
 	}
 	

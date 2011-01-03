@@ -11,7 +11,7 @@ class Email implements Serializable {
 	public static final String STATUS_SENT = "sent"
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Key id
 
 	@ManyToOne(fetch = FetchType.LAZY)
