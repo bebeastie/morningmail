@@ -83,19 +83,22 @@ public class DateUtils {
 	}
 	
 	public static Date getNormalizedTime(Date now, Long offset) {
-		//calculate the offset
-		Date offsetDate = new Date(now.getTime() + offset);
+		//first build calendars for the base date and now
+		Calendar baseCal = Calendar.getInstance();
+		baseCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+		baseCal.setTime(BASE_DATE);		
 		
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-		cal.setTime(offsetDate);
+		Calendar nowCal = Calendar.getInstance();
+		nowCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+		nowCal.setTime(now);
 		
-		//now make sure to reset other fields
-		cal.set(Calendar.DAY_OF_MONTH, BASE_DAY);
-		cal.set(Calendar.MONTH, BASE_MONTH);
-		cal.set(Calendar.YEAR, BASE_YEAR);	
+		//now set the hours, minute and sec of the base cal to the now cal
+		baseCal.set(Calendar.HOUR, nowCal.get(Calendar.HOUR));
+		baseCal.set(Calendar.MINUTE, nowCal.get(Calendar.MINUTE));
+		baseCal.set(Calendar.SECOND, nowCal.get(Calendar.SECOND));
 		
-		return cal.getTime();
+		//now caulcate the offset
+		return new Date(baseCal.getTime().getTime() + offset);
 	}
 	
 	public static boolean isWithin24Hours(Date date) {

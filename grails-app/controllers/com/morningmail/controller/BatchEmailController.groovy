@@ -5,6 +5,8 @@ import com.morningmail.domain.Email;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
+import com.google.appengine.api.datastore.Key
+import com.google.appengine.api.datastore.KeyFactory
 
 class BatchEmailController {
 
@@ -19,18 +21,28 @@ class BatchEmailController {
 	}
 	
 	def prepare = {
-		List<String> userKeys = batchEmailService.getNewslettersToRender()
+		List<Newsletter> newsletters = batchEmailService.getNewslettersToRender()
 		
-		for (String key: userKeys) {
-			log.info("Prepare and render email for user: " + key)
-			Queue queue = QueueFactory.getDefaultQueue()
-			queue.add(url("/email/fetchAndRenderAsync/" + key))
+		int totalEmails = 0
+		
+		for (Newsletter nl: newsletters) {
+			log.info("Prepare and render email for newsletter: " + nl.id)
+			Queue queue = QueueFactory.getQueue("mail-prepare-queue")
+			queue.add(url("/email/fetch/" + KeyFactory.keyToString(nl.id)))
+			totalEmails+=nl.subscribers.size()
+			
+			for(Key k: nl.subscribers) {
+				queue.add(url("/email/render/" + KeyFactory.keyToString(nl.id) + "/" 
+					+ KeyFactory.keyToString(k)))
+			}
 		}
 		
-		String summary = "Queued up rendering of " + userKeys.size() + " emails"
-		log.info(summary)
+		StringBuffer summary = new StringBuffer()
+			.append("Queued up rendering of " + newsletters.size() + " newletters ")
+			.append("for a total of " + totalEmails + " emails.")
+		log.info(summary.toString())
 		
-		render(view:'index', model:[returnValue:summary])
+		render(view:'index', model:[returnValue:summary.toString()])
 	}
 	
 	def send = {
@@ -38,7 +50,7 @@ class BatchEmailController {
 
 		for(String key: emailKeys) {
 			log.info("Send email with ID: " + key)
-			Queue queue = QueueFactory.getQueue("mail-queue")
+			Queue queue = QueueFactory.getQueue("mail-send-queue")
 			queue.add(url("/email/send/" + key))
 		}
 		

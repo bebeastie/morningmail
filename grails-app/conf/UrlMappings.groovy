@@ -7,26 +7,21 @@ class UrlMappings {
 			}
 		}
 
-		"/email/fetch/$id" {
+		"/email/fetch/$newsletterId" {
 			controller = "email"
 			action = "fetch"
 		 }
 		
-		"/email/render/$id" {
+		"/email/render/$newsletterId/$userId?" {
 			controller = "email"
 			action = "render"
 		 }
 		
-		"/email/send/$id" {
+		"/email/send/$emailId" {
 			controller = "email"
 			action = "send"
 		 }
-		
-		"/email/fetchAndRenderAsync/$id" {
-			controller = "email"
-			action = "fetchAndRenderAsync"
-		 }
-		
+			
 		"/globalFeed/fetch/$id" {
 			controller = "globalFeed"
 			action = "fetch"

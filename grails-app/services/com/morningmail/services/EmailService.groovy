@@ -105,7 +105,7 @@ class EmailService implements InitializingBean {
 		}	
 	}
 	
-	public Email render(Newsletter nl) {
+	public Email render(Newsletter nl, User u) {
 		try {
 		
 			StringBuffer text = new StringBuffer()
@@ -116,7 +116,7 @@ class EmailService implements InitializingBean {
 			
 			//now time to save it
 			
-			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), nl.owner.email)
+			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), u.email)
 				.addChild(Email.class.getSimpleName(), UUID.randomUUID().toString().replaceAll('-', ''))
 				.getKey()
 				
@@ -164,7 +164,7 @@ class EmailService implements InitializingBean {
 			text.append(getPlainTextFooter())
 			Email email = new Email()
 			email.id = emailId
-			email.user = nl.owner
+			email.user = u
 			email.html = new Text(html.toString())
 			email.plainText = new Text(text.toString().trim())
 			email.status = Email.STATUS_PENDING
@@ -175,7 +175,7 @@ class EmailService implements InitializingBean {
 			
 			
 			//add a reference to the user
-			nl.owner.emails.add(email)
+			u.emails.add(email)
 			//mark the user as well
 			nl.lastRenderedDate = Calendar.getInstance().getTime()
 			

@@ -4,11 +4,11 @@
     <rate>5/s</rate>
   </queue>
   <queue>
-    <name>render-queue</name>
+    <name>mail-send-queue</name>
     <rate>5/s</rate>
   </queue>
   <queue>
-    <name>mail-queue</name>
+    <name>mail-prepare-queue</name>
     <rate>5/s</rate>
   </queue>
 </queue-entries>

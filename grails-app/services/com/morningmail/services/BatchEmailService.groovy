@@ -27,37 +27,40 @@ class BatchEmailService {
 	 * email prepared within the past 5 hours.
 	 * @return
 	 */
-	public List<String> getNewslettersToRender() {
+	public List<Newsletter> getNewslettersToRender() {
 		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
 		
 		Date now = Calendar.getInstance().getTime();
 		
 		Date lowerDate = DateUtils.getNormalizedTime(now, -LOWER_DATE_BOUND)
 		Date upperDate = DateUtils.getNormalizedTime(now, UPPER_DATE_BOUND)
-				
-		Date lastRenderedDate = new Date(now.getTime() - PREVIOUS_PERIOD)
 		
+		log.info("Searching for newsletters between " + lowerDate + " and " + upperDate);
+	
+		Date lastRenderedDate = new Date(now.getTime() - PREVIOUS_PERIOD)
+
 		Query q = em.createQuery("select n from Newsletter n where n.deliveryTime >= :lowerDate" +
 			 " and n.deliveryTime <= :upperDate")
 		q.setParameter("lowerDate", lowerDate);
 		q.setParameter("upperDate", upperDate);
 		q.setMaxResults(75)
-		
+	
 		//GAE datastore doesn't support comparisons against two operators
 		//so we need to programmatically remove users that 
 		//we've rendered recently
-		List<String> validKeys = new ArrayList<String>()
+		List<Newsletter> newsletters = new ArrayList<Newsletter>()
 
 		List<User> dbResults = q.getResultList()
 		
 		for (Iterator<Newsletter> it = dbResults.iterator(); it.hasNext(); ) {
 			Newsletter n = it.next()
 			
-			if (n.lastRenderedDate < lastRenderedDate)
-				validKeys.add(KeyFactory.keyToString(n.id))
+			if (n.lastRenderedDate < lastRenderedDate) 
+				newsletters.add(n)
 		}
-		return validKeys
-
+		
+		log.info("Found " + newsletters.size() + " to render")
+		return newsletters
 	}
 	
 	/**

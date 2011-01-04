@@ -17,40 +17,51 @@ class EmailController {
 
 	def emailService
 	
+	/**
+	 * Fetches feeds specific to this newsletter
+	 */
 	def fetch = {
-		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.id))
+		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.newsletterId))
 		emailService.fetchPersonalFeeds(nl)
 		render(view:'index', model:[returnValue:"Fetch Complete"])
 	}
 	
+	/**
+	 * Queues up rendering of a newsletter for a specific user
+	 */
 	def render = {
-		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.id))
-		Email email = emailService.render(nl)
-		render(view:'index', model:[returnValue:email.html.getValue()])
+		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.newsletterId))
+		User u = params.userId ? User.findById(KeyFactory.stringToKey(params.userId)) : nl.owner
+		
+		String display
+		
+		if (nl.subscribers.contains(u.id)) {
+			Email email = emailService.render(nl,u)
+			display = email.html.getValue()
+		} else {
+			display = "Attempted to send a newsletter to a user that is not subscribed!";
+			log.error(display)
+		}
+		render(view:'index', model:[returnValue:display])
 	}
 	
+	/**
+	 * Sends an email
+	 */
 	def send = {
-		Email e = Email.findById(KeyFactory.stringToKey(params.id))
+		Email e = Email.findById(KeyFactory.stringToKey(params.emailId))
 		emailService.send(e)
 		render(view:'index', model:[returnValue:"Send Complete"])
-	}
-	
-	def fetchAndRenderAsync = {
-		//first do the fetch
-		Queue fetchQueue = QueueFactory.getQueue("fetch-queue")
-		fetchQueue.add(url("/email/fetch/" + params.id))
-		
-		//then do the render, we're assuming it will be ready in 45 sec
-		Queue renderQueue = QueueFactory.getQueue("render-queue")
-		renderQueue.add(url("/email/render/" + params.id).countdownMillis(45000))	
-		
-		render(view:'index', model:[returnValue:"fetchAndRenderAsync Complete"])
 	}
 	
 	def keepAlive = {
 		render(view:"index", model:[returnValue:"Keep Alive"])
 	}
 	
+	/**
+	 * Records a link click and forwards to the appropriate site. This is called
+	 * when a user clicks a link in an email.
+	 */
 	def link = {
 		String decodedUrl
 		try {
