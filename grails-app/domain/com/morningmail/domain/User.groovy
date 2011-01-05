@@ -25,6 +25,9 @@ class User implements Serializable {
 	
 	@Basic
 	String zipCode
+	
+	@Basic
+	Long lastTweetId
 		
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<OAuthToken> tokens = new ArrayList<OAuthToken>();

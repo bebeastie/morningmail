@@ -5,7 +5,7 @@ import com.morningmail.domain.OAuthToken
 
 class TwitterController {
 	
-	def twitterUserTimelineService
+	def twitterService
 	
 	def index = {
 		render(view:'index', model:[returnValue:"OK"])
@@ -19,13 +19,13 @@ class TwitterController {
 		
 		User u = User.findByEmail(session.userEmail)
 		
-		OAuthToken token = twitterUserTimelineService.generateRequestToken(u)
+		OAuthToken token = twitterService.generateRequestToken(u)
 		
 		render(view:'index', model:[returnValue:token.authorizationUrl])
 	}
 		
 	def callback = {
-		twitterUserTimelineService.upgradeToken(params.oauth_token, params.oauth_verifier)
+		twitterService.upgradeToken(params.oauth_token, params.oauth_verifier)
 		render(view:'index', model:[returnValue: "OK"])
 	}
 	
@@ -36,7 +36,8 @@ class TwitterController {
 		}
 		
 		User u = User.findByEmail(session.userEmail)
-		twitterUserTimelineService.getFeed(u)
+		twitterService.getFeed(u)
+		System.out.println("Back in the controller...")
 		render(view:'index', model:[returnValue: "OK"])
 	}
 	

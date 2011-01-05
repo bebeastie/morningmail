@@ -75,7 +75,12 @@
 							<g:select name="timeZone" from="${timeZones}" value="${selectedTimeZone}"/> 
 						</td>
 					</tr>
-					
+					<tr>
+						<td>Newsletter Name:</td>
+						<td>
+							<input id="newsletterName" type="text" name="newsletterName" value="" title="newsletterName" spellcheck="false"/>
+						</td>
+					</tr>				
 					<tr>
 						<td colspan="2" align="center">
 							<g:submitButton name="register" class="input-button" value="Sign Up"/>
