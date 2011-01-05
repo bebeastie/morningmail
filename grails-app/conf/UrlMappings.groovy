@@ -7,6 +7,11 @@ class UrlMappings {
 			}
 		}
 
+		"/nl/$name" {
+			controller = "newsletter"
+			action = "view"
+		}
+		
 		"/email/fetch/$newsletterId" {
 			controller = "email"
 			action = "fetch"

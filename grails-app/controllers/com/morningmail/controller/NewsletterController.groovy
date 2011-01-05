@@ -14,6 +14,24 @@ class NewsletterController {
 	def interestService
 	def entityManagerFactory
 	
+	def view = {
+		Newsletter nl
+		
+		try {
+			if (params.id) {
+				nl = Newsletter.findById(KeyFactory.stringToKey(params.id))	
+			} else if (params.name) {
+				nl = Newsletter.findByNameUppercase(params.name.replace('-',' ').toUpperCase())
+			}
+			//@TODO check to make sure it is public
+		} catch (Exception e) {
+			log.info("Had trouble finding newsletter", e)
+		}
+		
+		nl ? render(view:'view', model:[newsletter:nl]) :
+			render(view:'unknown')
+	}
+	
 	def create = {
 		if (!session.userEmail) {
 			redirect(uri:'/')

@@ -47,7 +47,7 @@ class UserController {
 			user.errors.rejectValue('', 'That email address is already registered')
 		
 		Newsletter nl = Newsletter.create(
-			user, "", params.deliveryTime, params.timeZone)
+			user, params.newsletterName, params.deliveryTime, params.timeZone)
 		
 		boolean validUser = user.validate()
 		boolean validNewsletter = nl.validate();	
@@ -61,7 +61,7 @@ class UserController {
 			
 			session.userEmail = user.email
 			
-			params.title = "" //this will be used to name the newsletter
+			params.title = params.newsletterName //this will be used to name the newsletter
 			
 			redirect(controller:'newsletter', action:'create', 
 				params:params)

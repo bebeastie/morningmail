@@ -49,7 +49,19 @@ class Newsletter implements Serializable {
 	 */
 	@Basic
 	Date lastRenderedDate
-		
+	
+	/**
+	 * This is needed to do case insensitive queries
+	 */
+	@Basic
+	String nameUppercase
+	
+	@PrePersist
+	@PreUpdate
+	public void prePersist() {
+		nameUppercase = name == null ? null : name.toUpperCase();
+	}
+	
     static constraints = {
     	id(visible:false)
 		owner(nullable:false)
