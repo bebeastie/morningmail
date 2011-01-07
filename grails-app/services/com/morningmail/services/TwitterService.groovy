@@ -22,6 +22,7 @@ class TwitterService implements PersonalFeedService, OAuthService{
 	private static final String CONSUMER_KEY = "FhIKL7PHV1y3tOekw5FMvA"
 	private static final String CONSUMER_SECRET = "hrPZTlhrwBjuV8VB6bkJDrGIXCVl3PpsDgUv522uNY"
 	private static final List IGNORE_DOMAINS = new ArrayList<String>()
+	private static final String HASH_MARKER = "digest";
 	
 	static {
 		IGNORE_DOMAINS.add("foursquare.com")
@@ -204,12 +205,37 @@ class TwitterService implements PersonalFeedService, OAuthService{
 					if (tx.isActive())
 						tx.rollback()
 				}
-
 			}
+		}
+		//this is my dirty little hack for making sure the container has a transaction to end
+		if (!tx.isActive())
+			tx.begin()
+	}
+	
+	public void getTweets(String screenName) {
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setOAuthConsumerKey(CONSUMER_KEY)
+			.setOAuthConsumerSecret(CONSUMER_SECRET)
+			.setIncludeEntitiesEnabled(true)
+			.setTrimUserEnabled(true)
+		Twitter twitter = new TwitterFactory(cb.build()).getInstance()
+		twitter4j.Paging paging = new twitter4j.Paging()
+		paging.setCount(200)
+		
+		List<Status> statuses = twitter.getUserTimeline(screenName, paging)
+		
+		for(Status status: statuses) {
+			if (!DateUtils.isWithin24Hours(status.getCreatedAt()))
+				break
 			
-			//this is my dirty little hack for making sure the container has a transaction to end
-			if (!tx.isActive())
-				tx.begin()
+			for(twitter4j.HashtagEntity htag: status.getHashtagEntities()) {
+				if(HASH_MARKER.equals(htag.getText().toLowerCase())) {
+					for(twitter4j.URLEntity url: status.getURLEntities()) {
+						
+					}
+					break
+				}	
+			}
 		}
 	}
 	

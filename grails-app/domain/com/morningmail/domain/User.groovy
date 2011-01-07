@@ -9,7 +9,11 @@ import java.util.Set;
 @Entity
 class User implements Serializable {
 
-	public static final Date DELIVERY_BASE_DATE =  new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z").parse("11/22/2010 00:00:00 -0500")
+	public static class TYPE {
+		public static final List<String> ALL = [STANDARD,SUBSCRIBE_ONLY]
+		public static final String STANDARD = "standard"
+		public static final String SUBSCRIBE_ONLY = "subscribe_only"	
+	} 
 	
     @Id
 	Key id
@@ -22,6 +26,9 @@ class User implements Serializable {
 	
 	@Basic
 	String name
+	
+	@Basic
+	String type
 	
 	@Basic
 	String zipCode
@@ -49,9 +56,10 @@ class User implements Serializable {
 	
     static constraints = {
     	id(visible:false)
-		name(nullable:false, blank:false)
-		password(nullable:false, blank:false)
-		zipCode(nullable:false, blank:false, matches:"\\d{5}(-\\d{4})?")
+		name(nullable:true, blank:true)
+		password(nullable:true, blank:true)
+		type(inList:TYPE.ALL, nullable:false, blank:false)
+		zipCode(nullable:true, blank:true, matches:"\\d{5}(-\\d{4})?")
 		email(email:true, nullable: false, blank:false)	
 	}
 }

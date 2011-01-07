@@ -4,7 +4,7 @@ import com.morningmail.services.FeedService;
 import com.morningmail.domain.Feed;
 import com.morningmail.domain.Email;
 import com.morningmail.domain.Interest;
-import com.morningmail.utils.HttpUtils;
+import com.morningmail.utils.WebUtils;
 import javax.persistence.*;
 import com.google.appengine.api.datastore.Text
 import org.jsoup.nodes.Document
@@ -19,7 +19,7 @@ import com.morningmail.utils.LinkUtils;
 class YahooNewsFeedService implements FeedService {
 
 	public void fetch(Feed feed) {
-		feed.raw = new Text(HttpUtils.fetchUrl(feed.url))
+		feed.raw = new Text(WebUtils.fetchUrl(feed.url))
 		feed.lastUpdated = new Date()
 	}
 	

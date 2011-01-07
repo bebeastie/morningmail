@@ -4,7 +4,7 @@ import com.morningmail.domain.Feed;
 import com.morningmail.domain.Email;
 import com.morningmail.domain.Interest 
 import com.morningmail.utils.DateUtils;
-import com.morningmail.utils.HttpUtils;
+import com.morningmail.utils.WebUtils;
 import com.morningmail.utils.TextUtils;
 import com.morningmail.utils.LinkUtils;
 import com.google.appengine.api.datastore.Text
@@ -24,7 +24,7 @@ class RomeFeedService implements FeedService {
 	private static final TITLE_PLACEHOLDER = "^{title}^"
 	
 	public void fetch(Feed feed) {  
-		feed.raw = new Text(HttpUtils.fetchUrl(feed.url))
+		feed.raw = new Text(WebUtils.fetchUrl(feed.url))
 		feed.lastUpdated = new Date()
 	}
 		

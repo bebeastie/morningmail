@@ -41,5 +41,10 @@ class TwitterController {
 		render(view:'index', model:[returnValue: "OK"])
 	}
 	
+	def user = {
+		twitterService.getTweets(params.screenName)
+		render(view:'index', model:[returnValue: "OK"])
+	}
+	
 
 }
