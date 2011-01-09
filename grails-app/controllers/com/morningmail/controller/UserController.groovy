@@ -37,6 +37,7 @@ class UserController {
 		user.email = params.regEmail
 		user.zipCode = params.zipCode
 		user.password = params.regPassword
+		user.type = User.TYPE.STANDARD
 		
 		boolean correctCode = "tufts".equals(params.inviteCode)
 				

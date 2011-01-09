@@ -43,7 +43,7 @@ class User implements Serializable {
 	List<Newsletter> newsletters = new ArrayList<Newsletter>();
 	
 	@Basic
-	List<Key> subscriptions = new ArrayList<Key>();
+	List<Key> subscriptions = new ArrayList<String>();
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	List<PersonalFeed> pFeeds = new ArrayList<PersonalFeed>();

@@ -18,6 +18,9 @@ class Email implements Serializable {
 	User user;
 	
 	@Basic
+	Key newsletterKey
+	
+	@Basic
 	Text plainText
 	
 	@Basic

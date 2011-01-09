@@ -2,6 +2,7 @@ package com.morningmail.controller
 
 import com.morningmail.domain.Newsletter;
 import com.morningmail.domain.Interest;
+import com.morningmail.domain.Email;
 import com.morningmail.domain.User;
 import com.morningmail.utils.WebUtils;
 import com.google.appengine.api.datastore.Key;
@@ -20,7 +21,7 @@ class NewsletterController {
 		
 		try {
 			if (params.id) {
-				nl = Newsletter.findById(KeyFactory.stringToKey(params.id))	
+				nl = Newsletter.findById(params.id)	
 			} else if (params.name) {
 				nl = Newsletter.findByNameUppercase(params.name.replace('-',' ').toUpperCase())
 			}
@@ -35,9 +36,13 @@ class NewsletterController {
 	
 	def subscribe = {
 		Newsletter nl
+		String view
+		
+		def em = EntityManagerFactoryUtils.
+			getTransactionalEntityManager(entityManagerFactory)
 		
 		try {
-			nl = Newsletter.findById(KeyFactory.stringToKey(params.newsletter))	
+			nl = Newsletter.findById(params.newsletterId)
 		} catch (Exception e) {
 			log.error("Had trouble finding the newsletter", e)
 			//show newsletter not found error
@@ -45,12 +50,18 @@ class NewsletterController {
 			return
 		}
 		
-		if (WebUtils.isValidEmailAddress(params.email)) {
+		if (!WebUtils.isValidEmailAddress(params.email)) {
+			flash.message = "Please enter a valid email address"
+			flash.email = params.email
+			view = "view"
+		} else {
 			User u = User.findByEmail(params.email)
 			
 			if(!u) {
+				//@TODO this should be done by a UserService!
 				//create an account
 				u = new User()
+				u.id = KeyFactory.createKey(User.class.getSimpleName(), params.email)
 				u.email = params.email
 				u.type = User.TYPE.SUBSCRIBE_ONLY
 			} else if (u.type == User.TYPE.STANDARD
@@ -60,24 +71,43 @@ class NewsletterController {
 				redirect(controller:'user', action:'login')
 				return
 			} 
-				
-			u.newsletters.add(nl)
 			
-			User.withTransaction() {
-				u.save(flush:true)
+			if (!u.subscriptions.contains(nl.id)) {
+				u.subscriptions.add(nl.id)
+				User.withTransaction() {
+					u.save(flush:true)
+				}
+					
+				nl.subscribers.add(u.id)
+				em.merge(nl)
+				view="subscribe"
+			} else {
+				flash.message = "You are already subscribed to this newsletter"
+				flash.email = params.email
+				view="view"
 			}
-				
-			nl.subscribers.add(u)
+		} 
+		render(view:view, model:[newsletter:nl])
+	}
+	
+	def unsubscribe = {
+		def em = EntityManagerFactoryUtils.
+			getTransactionalEntityManager(entityManagerFactory)
+		
+		try {
+			Email email = Email.findById(KeyFactory.stringToKey(params.emailId))	
+			Newsletter nl = Newsletter.findById(email.newsletterKey)
+			nl.subscribers.remove(email.user.id)
+			nl.merge()
 			
-			Newsletter.withTransaction() {
-				nl.merge()
-			}
-			render(view:"completeSubscription", model:[newsletter:nl])
-			return
-		} else {
-			flash.message = "Please enter a valid email address"
-			flash.email = params.email
-			render(view:"view")
+			User u = email.user
+			u.subscriptions.remove(nl.id)
+			u.merge()
+			
+			render(view:'unsubscribe', model:[newsletter:nl])
+		} catch (Exception e) {
+			log.error("Problem unsubscribing from newsletter.",e)
+			render(view:'error')
 		}
 	}
 		
@@ -101,7 +131,7 @@ class NewsletterController {
 			user.subscriptions.add(nl.id)
 			em.merge(user)
 			
-			redirect(action:'edit', params:[id:KeyFactory.keyToString(nl.id)])
+			redirect(action:'edit', params:[id:nl.id])
 		} else {
 			log.error("ERROR trying to create!")
 		}
@@ -115,7 +145,7 @@ class NewsletterController {
 		
 		User user = User.findByEmail(session.userEmail)
 		
-		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.id))
+		Newsletter nl = Newsletter.findById(params.id)
 		
 		def interestList = interestService.getAll(user)
 		def interestMap = new HashMap<Key, Interest>()

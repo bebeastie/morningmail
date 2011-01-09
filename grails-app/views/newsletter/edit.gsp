@@ -31,7 +31,7 @@
 			<td colspan="2" align="left">
 	
 		<g:hiddenField name="save" value="${true}" />
-		<g:hiddenField name="id" value="${KeyFactory.keyToString(newsletter.id)}"/>
+		<g:hiddenField name="id" value="${newsletter.id}"/>
 		
 		<label for="interests">Select your interests from the list below or <a href="/interest/create">add your own</a>.</label> 
 		<select id="interests" multiple="multiple" name="interests[]" title="Click to Select an Interest"> 

@@ -16,7 +16,7 @@ class DashboardController {
 		if (user.subscriptions.size() == 1 && 
 				user.newsletters.size() == 1) {
 			redirect(controller:'newsletter', action:'edit', 
-				params:[id:KeyFactory.keyToString(user.newsletters.get(0).id)])
+				params:[id:user.newsletters.get(0).id])
 		} else {
 			
 		}

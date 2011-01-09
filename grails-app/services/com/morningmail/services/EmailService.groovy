@@ -8,6 +8,7 @@ import com.morningmail.domain.Feed
 import com.morningmail.domain.PersonalFeed;
 import com.morningmail.services.FeedService
 import com.morningmail.services.PersonalFeedService
+import com.morningmail.utils.WebUtils;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text
 
@@ -23,9 +24,12 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.BodyPart;
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.InitializingBean
 import java.text.SimpleDateFormat
 import com.google.appengine.api.datastore.Key
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 
 class EmailService implements InitializingBean {
 
@@ -54,10 +58,13 @@ class EmailService implements InitializingBean {
 		return header.toString()
 	}
 	
-	public static final String getHtmlFooter() {
-		StringBuffer footer = new StringBuffer() 
-		footer.append("Thanks,<br/>MorningMail")
-		footer.append("</body></html>")
+	public static final String getHtmlFooter(String emailAddress, String emailId) {
+		StringBuffer footer = new StringBuffer()
+			.append("Have a good day,<br/>The MorningMail Team").append("</br>")
+		.append("<center>Sent to: " + emailAddress + ": ")
+		.append(WebUtils.createLinkElement('newsletter', 'unsubscribe', [emailId:emailId], 'Unsubscribe'))
+		.append("</center>")
+		.append("</body></html>")
 		return footer.toString()
 	}
 	
@@ -89,6 +96,9 @@ class EmailService implements InitializingBean {
 	
 	FeedService globalFeedService
 	
+	def entityManagerFactory
+	def em
+	
 	public void fetchPersonalFeeds(Newsletter nl){
 		try {
 			if (nl.interests.contains(GOOGLE_CAL.id)) 
@@ -107,7 +117,9 @@ class EmailService implements InitializingBean {
 	
 	public Email render(Newsletter nl, User u) {
 		try {
-		
+			em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
+			def tx = em.getTransaction()
+			
 			StringBuffer text = new StringBuffer()
 			StringBuffer html = new StringBuffer()
 			
@@ -160,26 +172,31 @@ class EmailService implements InitializingBean {
 				} 		
 			}
 			
-			html.append(getHtmlFooter())
+			html.append(getHtmlFooter(u.email, KeyFactory.keyToString(emailId)))
 			text.append(getPlainTextFooter())
+						
 			Email email = new Email()
 			email.id = emailId
 			email.user = u
+			email.newsletterKey = KeyFactory.stringToKey(nl.id)
 			email.html = new Text(html.toString())
 			email.plainText = new Text(text.toString().trim())
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
-		
+
 			//need to set deliverydate
-				
-			
-			
-			//add a reference to the user
+
+
+
+			//add a reference to the use
 			u.emails.add(email)
+			tx.commit()
+//			
+			tx.begin()
 			//mark the user as well
 			nl.lastRenderedDate = Calendar.getInstance().getTime()
-			
-			email.save()
+
+//			email.save()
 
 			return email
 		} catch (Exception e) {

@@ -6,7 +6,6 @@ import com.morningmail.domain.Interest
 import com.morningmail.utils.DateUtils;
 import com.morningmail.utils.WebUtils;
 import com.morningmail.utils.TextUtils;
-import com.morningmail.utils.LinkUtils;
 import com.google.appengine.api.datastore.Text
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup;
@@ -55,7 +54,7 @@ class RomeFeedService implements FeedService {
 					if (DateUtils.isWithin24Hours(entry.getPublishedDate())) {
 						
 						String htmlTitle = new StringBuffer("<a href=\"")
-							.append(LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink()))
+							.append(WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink()))
 							.append("\">")
 							.append(entry.getTitle())
 							.append("</a><br/>")
@@ -82,7 +81,7 @@ class RomeFeedService implements FeedService {
 						text.append(description)
 						
 						if (interest.includeItemMoreLink) {
-							html.append("<a href=\""+LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
+							html.append("<a href=\""+WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
 							text.append(entry.getLink())
 						}
 						

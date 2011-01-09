@@ -14,7 +14,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.io.SyndFeedInput;
 import java.io.StringReader;
-import com.morningmail.utils.LinkUtils;
+import com.morningmail.utils.WebUtils;
 
 class YahooNewsFeedService implements FeedService {
 
@@ -55,7 +55,7 @@ class YahooNewsFeedService implements FeedService {
 					iTitle = iTitle.trim()
 					
 					String htmlTitle = new StringBuffer("<a href=\"")
-						.append(LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink()))
+						.append(WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink()))
 						.append("\">")
 						.append(iTitle)
 						.append("</a><br/>")
@@ -85,7 +85,7 @@ class YahooNewsFeedService implements FeedService {
 					text.append(description)
 					
 					if (interest.includeItemMoreLink) { 
-						html.append("<a href=\""+LinkUtils.encode(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
+						html.append("<a href=\""+WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
 						text.append(entry.getLink())
 					}
 					

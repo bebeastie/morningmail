@@ -10,13 +10,15 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text
 
 import com.morningmail.utils.DateUtils;
+import org.datanucleus.jpa.annotations.Extension;
 
 @Entity
 class Newsletter implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Key id
+	@Extension(vendorName="datanucleus", key="gae.encoded-pk", value="true")
+	String id
 
 	@Basic
 	String name;
