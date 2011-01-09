@@ -43,8 +43,12 @@ class EmailService implements InitializingBean {
 		return "MorningMail - " + getTodaysDate() + "\n\n"
 	}
 	
-	public static final String getPlainTextFooter() {
-		return "Thanks,\nMorningMail"
+	public static final String getPlainTextFooter(String emailAddress, String emailId) {
+		StringBuffer sb = new StringBuffer()
+		sb.append("Have a great day,\nThe MorningMail Team")
+		sb.append("Sent to: " + emailAddress + " | Unsubscribe:"  )
+		sb.append("\n"+WebUtils.getUrl('newsletter', 'unsubscribe', [emailId:emailId]))
+		return sb.toString()
 	}
 	
 	public static final String getHtmlHeader() {
@@ -60,8 +64,8 @@ class EmailService implements InitializingBean {
 	
 	public static final String getHtmlFooter(String emailAddress, String emailId) {
 		StringBuffer footer = new StringBuffer()
-			.append("Have a good day,<br/>The MorningMail Team").append("</br>")
-		.append("<center>Sent to: " + emailAddress + ": ")
+			.append("Have a great day,<br/>The MorningMail Team").append("</br>")
+		.append("<center>Sent to: " + emailAddress + " | ")
 		.append(WebUtils.createLinkElement('newsletter', 'unsubscribe', [emailId:emailId], 'Unsubscribe'))
 		.append("</center>")
 		.append("</body></html>")
@@ -173,7 +177,7 @@ class EmailService implements InitializingBean {
 			}
 			
 			html.append(getHtmlFooter(u.email, KeyFactory.keyToString(emailId)))
-			text.append(getPlainTextFooter())
+			text.append(getPlainTextFooter(u.email, KeyFactory.keyToString(emailId)))
 						
 			Email email = new Email()
 			email.id = emailId
@@ -184,19 +188,16 @@ class EmailService implements InitializingBean {
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
 
-			//need to set deliverydate
-
-
-
-			//add a reference to the use
-			u.emails.add(email)
-			tx.commit()
-//			
-			tx.begin()
-			//mark the user as well
+			try {
+				u.emails.add(email) //this actually saves the email too
+				tx.commit()
+			} finally {
+				if (tx.isActive())
+					tx.rollback()
+			}
+			
+			tx.begin() //have to start another transaction, it will be closed by the container
 			nl.lastRenderedDate = Calendar.getInstance().getTime()
-
-//			email.save()
 
 			return email
 		} catch (Exception e) {
