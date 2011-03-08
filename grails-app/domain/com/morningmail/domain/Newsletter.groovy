@@ -33,6 +33,9 @@ class Newsletter implements Serializable {
 	List<Key> subscribers = new ArrayList<Key>();
 	
 	@Basic
+	Text curatorInfo = new Text("");
+	
+	@Basic
 	Date deliveryTime
 	
 	@Basic

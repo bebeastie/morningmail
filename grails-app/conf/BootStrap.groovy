@@ -9,6 +9,9 @@ class BootStrap {
 	def messageSource
 	
     def init = { servletContext ->
+		
+		
+		
 		if(Environment.getCurrent() == Environment.PRODUCTION){
 			messageSource.basenames = ['WEB-INF/grails-app/i18n/messages']
 			messageSource.clearCache()
@@ -63,7 +66,6 @@ class BootStrap {
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://online.wsj.com/xml/rss/3_7011.xml"
 			feed.title = "WSJ: U.S. Homepage"
-
 			feed.save()
 		}
 		
@@ -74,26 +76,62 @@ class BootStrap {
 			feed.type = Feed.TYPE_GENERIC_RSS
 			feed.url = "http://steveblank.com/feed/"
 			feed.title = "Steve Blank"
-
 			feed.save()
 		}
 		
-//		//Blog: Eric Ries
-//		if (!Feed.findById(GlobalFeedService.ID_BLOG_ERIC_RIES)) {
-//			Feed feed = new Feed()
-//			feed.id = GlobalFeedService.ID_BLOG_ERIC_RIES
-//			feed.type = Feed.TYPE_GENERIC_RSS
-//			feed.url = "http://feeds.feedburner.com/startup/lessons/learned"
-//			feed.title = "Eric Ries"
-//			feed.maxStories = 5
-//			feed.maxWordsPerStory = 40
-//			feed.includeItemMoreLink = true
-//			feed.save()
-//		}
+		//Blog: Eric Ries
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_ERIC_RIES)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_ERIC_RIES
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/startup/lessons/learned"
+			feed.title = "Eric Ries"
+			feed.save()
+		}
 		
-//		http://feeds.feedburner.com/startup/lessons/learned
+		//Blog: 500 Hats
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_500_HATS)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_500_HATS
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/typepad/500hats"
+			feed.title = "Master of 500 Hats"
+			feed.save()
+		}
+		
+		//Blog: Both sides of the table
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_BOTH_SIDES_TABLE)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_BOTH_SIDES_TABLE
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/BothSidesOfTheTable"
+			feed.title = "Both Sides of the Table"
+			feed.save()
+		}
+		
+		//Blog: Sean Ellis
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_SEAN_ELLIS)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_SEAN_ELLIS
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds2.feedburner.com/Startup-Marketing/"
+			feed.title = "Startup Marketing - Sean Ellis"
+			feed.save()
+		}
+		
+		//Blog: SK Murphy
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_SK_MURPHY)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_SK_MURPHY
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/skmurphy/feed"
+			feed.title = "SK Murphy"
+			feed.save()
+		}
+
 		
 		//END FEED CONFIG
+		
 		
 		//START INTEREST CONFIG
 		if (!Interest.findBySystemName(Interest.SN_TOP_NEWS)) {
@@ -187,6 +225,66 @@ class BootStrap {
 			interest.save()
 		}
 		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_ERIC_RIES)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_ERIC_RIES
+			interest.displayName = "Eric Ries"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_ERIC_RIES).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_500_HATS)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_500_HATS
+			interest.displayName = "Master of 500 Hats"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_500_HATS).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_BOTH_SIDES_TABLE)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_BOTH_SIDES_TABLE
+			interest.displayName = "Both Sides of the Table"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_BOTH_SIDES_TABLE).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_SEAN_ELLIS)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_SEAN_ELLIS
+			interest.displayName = "Startup Marketing - Sean Ellis"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_SEAN_ELLIS).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_SK_MURPHY)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_SK_MURPHY
+			interest.displayName = "SKMurphy"
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_SK_MURPHY).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
 		if (!Interest.findBySystemName(Interest.SN_READ_LATER)) {
 			Interest interest = new Interest()
 			interest.systemName = Interest.SN_READ_LATER
@@ -195,17 +293,7 @@ class BootStrap {
 			interest.personalFeedId = PersonalFeed.TYPE_READ_LATER
 			interest.save()
 		}
-		
-//		if (!Interest.findByType(Interest.TYPE_BLOG_ERIC_RIES)) {
-//			Interest interest = new Interest()
-//			interest.type = Interest.TYPE_BLOG_ERIC_RIES
-//			interest.displayName = "Blog: Eric Ries"
-//			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
-//			interest.feedId = GlobalFeedService.ID_BLOG_ERIC_RIES
-//			interest.save()
-//		}
 		//END INTEREST CONFIG	
-		
     }
     def destroy = {
     }

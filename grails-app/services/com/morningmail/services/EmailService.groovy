@@ -30,17 +30,26 @@ import org.springframework.beans.factory.InitializingBean
 import java.text.SimpleDateFormat
 import com.google.appengine.api.datastore.Key
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.context.*
 
-class EmailService implements InitializingBean {
-
+class EmailService implements InitializingBean, ApplicationContextAware {
+	
+	ApplicationContext applicationContext
+	
 	public static Interest WEATHER
 	public static Interest GOOGLE_CAL
 	public static Interest READ_LATER
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
-	public static final String getPlainTextHeader() {
+	public final String getPlainTextHeader() {
 		return "MorningMail - " + getTodaysDate() + "\n\n"
+	}
+	
+	public static final String getPlainTextCuratorInfo(Newsletter nl) {
+		StringBuffer cInfo = new StringBuffer();
+		cInfo.append(nl.curatorInfo.getValue())
+		return cInfo.toString();
 	}
 	
 	public static final String getPlainTextFooter(String emailAddress, String emailId) {
@@ -51,35 +60,67 @@ class EmailService implements InitializingBean {
 		return sb.toString()
 	}
 	
-	public static final String getHtmlHeader() {
+	public static final String getHtmlHeader(Newsletter nl, File css) {
 		StringBuffer header = new StringBuffer()
 		header.append("<html><head>")
-			.append(getCss()).append("<title>")
-			.append(getTodaysDate())
+			.append(getCss(css))
+			.append("<title>")
+			.append("MorningMail - ").append(nl.getName()).append(" Edition").append(" - ").append(getTodaysDate())
 			.append("</title></head>")
 			.append("<body>")
-			.append("<center><b>MorningMail - " + getTodaysDate() + "</b><br/><br/></center>")
+			.append("<div id=\"date\">").append(getTodaysDate()).append("</div>")
+			.append("<div id=\"main-header\">")
+			.append("<div id=\"logo\"><img src=\"").append(WebUtils.getUrl("images/logo2.png")).append("\"/></div>")
+			.append("<div id=\"title\">").append(nl.getName()).append(" Edition</div>")
+			.append("</div><hr/>")
 		return header.toString()
 	}
 	
-	public static final String getHtmlFooter(String emailAddress, String emailId) {
+	public static final String getHtmlCuratorInfo(Newsletter nl) {
+		StringBuffer cInfo = new StringBuffer();
+		cInfo.append("<div>")
+			.append("<b>")
+			.append(nl.name.toUpperCase())
+			.append("S".equals(nl.name.toUpperCase().substring(nl.name.length() - 1)) ? "'" : "'S")
+			.append(" CURATORS")
+			.append("</b>")
+			.append("<br/>")
+			.append(nl.curatorInfo.getValue())
+			.append("</div><hr/>")
+		return cInfo.toString();
+	}
+	
+	public static final String getHtmlFooter(Newsletter nl, String emailAddress, String emailId) {
 		StringBuffer footer = new StringBuffer()
-			.append("Have a great day,<br/>The MorningMail Team").append("</br>")
+			.append("Have a great day,<br/>The MorningMail Team").append("<br/><br/>")
 		.append("<center>Sent to: " + emailAddress + " | ")
 		.append(WebUtils.createLinkElement('newsletter', 'unsubscribe', [emailId:emailId], 'Unsubscribe'))
+		.append(" | ").append(WebUtils.createLinkElement('newsletter', 'view', [name:nl.name], 'Subscribe'))
+		.append("<br/>Want to make your own newsletter? <a href=\"mailto:info@getmorningmail.com?subject=Invite request\">Email Us</a> for an invitation")
 		.append("</center>")
 		.append("</body></html>")
 		return footer.toString()
 	}
 	
-	public static final String getCss() {
-		return "<style>body{font-size: 12px;color: #111111;line-height: 150%;font-family: Verdana;" +
-			"background-color: #FFFFFF;padding: 5px;border: 0px none #FFFFFF;}</style>"
+	public static final String getCss(File css) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<style type=\"text/css\">")	
+		String NL = System.getProperty("line.separator");
+		Scanner scanner = new Scanner(new FileInputStream(css), "UTF-8");
+		try {
+		  while (scanner.hasNextLine()){
+			sb.append(scanner.nextLine() + NL);
+		  }
+		} finally{
+		  scanner.close();
+		}
+		sb.append("</style>")
+		return sb.toString()
 	}
 	
 	private static String getTodaysDate() {
 		Date now = Calendar.getInstance().getTime()
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d")
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d yyyy")
 		dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT-5"))
 		return dateFormatter.format(now)
 	}
@@ -127,9 +168,11 @@ class EmailService implements InitializingBean {
 			StringBuffer text = new StringBuffer()
 			StringBuffer html = new StringBuffer()
 			
-			html.append(getHtmlHeader())
+			html.append(getHtmlHeader(nl, applicationContext.getResource("/css/email.css").getFile()))
 			text.append(getPlainTextHeader())
 			
+			html.append(getHtmlCuratorInfo(nl));
+			text.append(getPlainTextCuratorInfo(nl));
 			//now time to save it
 			
 			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), u.email)
@@ -176,7 +219,7 @@ class EmailService implements InitializingBean {
 				} 		
 			}
 			
-			html.append(getHtmlFooter(u.email, KeyFactory.keyToString(emailId)))
+			html.append(getHtmlFooter(nl,u.email, KeyFactory.keyToString(emailId)))
 			text.append(getPlainTextFooter(u.email, KeyFactory.keyToString(emailId)))
 						
 			Email email = new Email()
@@ -236,15 +279,7 @@ class EmailService implements InitializingBean {
             msg.setContent(mp);
 
             Transport.send(msg);
-	  
-//			Message msg = new MimeMessage(session);
-//			msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
-//			msg.addRecipient(Message.RecipientType.TO,
-//							 new InternetAddress(email.user.email, email.user.name));
-//			msg.setSubject(subject);
-//			msg.setText(msgBody)
-//			Transport.send(msg);
-			
+	  			
 			//now mark it sent
 			email.status = Email.STATUS_SENT
 			email.deliveryDate = msg.getSentDate()

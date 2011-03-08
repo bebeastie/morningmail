@@ -13,6 +13,10 @@ class GlobalFeedService implements FeedService, InitializingBean {
 	public static final String SN_WSJ_HOME_US = "wsj_us_home"
 	public static final String SN_BLOG_STEVE_BLANK = "blog_steve_blank"
 	public static final String SN_BLOG_ERIC_RIES = "blog_eric_ries"
+	public static final String SN_BLOG_500_HATS = "500_hats"
+	public static final String SN_BLOG_BOTH_SIDES_TABLE = "both_sides_table"
+	public static final String SN_BLOG_SEAN_ELLIS = "sean_ellis"
+	public static final String SN_BLOG_SK_MURPHY = "sk_murphy"
 	
 	void afterPropertiesSet() {
 	}

@@ -42,7 +42,7 @@ class EmailController {
 			display = "Attempted to send a newsletter to a user that is not subscribed!";
 			log.error(display)
 		}
-		render(view:'index', model:[returnValue:display])
+		render(view:'render', model:[returnValue:display])
 	}
 	
 	/**

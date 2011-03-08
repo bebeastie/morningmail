@@ -7,6 +7,7 @@ import com.morningmail.domain.User;
 import com.morningmail.utils.WebUtils;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Text
 
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import javax.persistence.EntityManager;
@@ -20,8 +21,8 @@ class NewsletterController {
 		Newsletter nl
 		
 		try {
-			if (params.id) {
-				nl = Newsletter.findById(params.id)	
+			if (params.newsletterId) {
+				nl = Newsletter.findById(params.newsletterId)	
 			} else if (params.name) {
 				nl = Newsletter.findByNameUppercase(params.name.replace('-',' ').toUpperCase())
 			}
@@ -116,8 +117,8 @@ class NewsletterController {
 			redirect(uri:'/')
 			return
 		}
-		
 		User user = User.findByEmail(session.userEmail)
+
 		Newsletter nl = Newsletter.create(user, params.title, params.deliveryTime, 
 			params.timeZone)
 		
@@ -133,7 +134,7 @@ class NewsletterController {
 			
 			redirect(action:'edit', params:[id:nl.id])
 		} else {
-			log.error("ERROR trying to create!")
+			log.error("ERROR trying to create:" + nl.errors.allErrors)
 		}
 	}
 	
@@ -157,6 +158,7 @@ class NewsletterController {
 			def em = EntityManagerFactoryUtils.
 				getTransactionalEntityManager(entityManagerFactory)
 			nl.setInterests(params.get("interests[]"))
+			nl.curatorInfo = new Text(params.curatorInfo?.trim())
 			em.merge(nl)
 		}
 

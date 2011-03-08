@@ -65,7 +65,13 @@ class RomeFeedService implements FeedService {
 							.append("\n")
 							.toString()
 						
-						Document doc = Jsoup.parse(entry.getDescription().getValue());
+						Document doc
+						try {
+							doc = Jsoup.parse(entry.getDescription().getValue());
+						} catch (NullPointerException e) {
+							doc = Jsoup.parse(entry.getContents().get(0).getValue())
+						}
+			
 						String description = doc.text()
 						description = description.trim()
 						

@@ -50,6 +50,13 @@
 			</g:each>
 		</select>
 		</td></tr>
+		
+		<tr>
+			<td colspan="2">
+			Curator info (can be HTML):<br/>
+			<textarea name="curatorInfo" cols="60" rows="5">${newsletter.curatorInfo.getValue()}</textarea>
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2"><font color="red">Don't forget to press the save button.</font></td>
 		</tr>

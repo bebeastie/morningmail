@@ -20,6 +20,11 @@ class Interest implements Serializable {
 	public static final String SN_BLOG_STEVE_BLANK = "blog_steve_blank"
 	public static final String SN_BLOG_ERIC_RIES = "blog_eric_ries"
 	public static final String SN_READ_LATER = "read_later"
+	public static final String SN_BLOG_500_HATS = "500_hats"
+	public static final String SN_BLOG_BOTH_SIDES_TABLE = "both_sides_table"
+	public static final String SN_BLOG_SEAN_ELLIS = "sean_ellis"
+	public static final String SN_BLOG_SK_MURPHY = "sk_murphy"
+	
 	
 	public static final String FEED_STYLE_GLOBAL = "global"
 	public static final String FEED_STYLE_PERSONAL = "personal"

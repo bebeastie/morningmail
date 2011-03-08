@@ -94,4 +94,8 @@ public class WebUtils {
 			.append("\">$text</a>")
 		return sb.toString()
 	}
+	
+	public static getUrl(String path) {
+		return ConfigurationHolder.config.grails.serverURL + path;
+	}
 }

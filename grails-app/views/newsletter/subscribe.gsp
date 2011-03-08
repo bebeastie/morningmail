@@ -1,9 +1,12 @@
 <html>
 <head>
-<title>Subscription to ${newsletter?.name}</title>
+	<meta name="layout" content="main"></meta>
+	<title>Subscription to ${newsletter?.name}</title>
 </head>
-
-<body>You just subscribed to "${newsletter?.name}". You'll get your first email at ${newsletter.localDeliveryTime} ${newsletter.timeZone}. Woot woot!
+<body>
+	<br>
+	<div class="statement">
+	You just subscribed to "${newsletter?.name}". You'll get your first email at ${newsletter?.localDeliveryTime} ${newsletter?.timeZone}. Woot woot!
+	</div>
 </body>
-
 </html>
