@@ -55,8 +55,11 @@ class BatchEmailService {
 		for (Iterator<Newsletter> it = dbResults.iterator(); it.hasNext(); ) {
 			Newsletter n = it.next()
 			
-			if (n.lastRenderedDate < lastRenderedDate) 
+			if (n.lastRenderedDate < lastRenderedDate) {
 				newsletters.add(n)
+				n.lastRenderedDate = Calendar.getInstance().getTime()
+				em.merge(n)
+			}
 		}
 		
 		log.info("Found " + newsletters.size() + " to render")
