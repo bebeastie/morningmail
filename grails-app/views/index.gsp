@@ -9,7 +9,7 @@
 %>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="/css/main.css"/>
+		<link rel="stylesheet" type="text/css" href="/css/default.css"/>
 		<title>Wakeup E-mail Signup - Step 1</title>
 	</head>
 	<body>

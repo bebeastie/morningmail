@@ -1,0 +1,32 @@
+body {
+	font-size: 12px;
+	color: #111111;
+	line-height: 150%;
+	font-family: Verdana;
+	padding: 5px;
+	border: 0px none #FFFFFF;
+}
+
+#main-header {
+	height: 70px;
+}
+
+#logo {
+	margin-top: 3px;
+	float: left;
+}
+
+#title {
+	font-size: 22px;
+	text-align: center;
+	vertical-align: middle;
+	height: 70px;
+	min-height: 10em;
+	display: table-cell;
+	width: 500px;
+}
+
+#date {
+	float: right;
+	text-align: right;
+}
