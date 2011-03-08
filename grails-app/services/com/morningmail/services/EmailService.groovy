@@ -42,7 +42,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
-	public final String getPlainTextHeader() {
+	public static final String getPlainTextHeader() {
 		return "MorningMail - " + getTodaysDate() + "\n\n"
 	}
 	
@@ -226,8 +226,14 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			email.id = emailId
 			email.user = u
 			email.newsletterKey = KeyFactory.stringToKey(nl.id)
+			
+			//set body
 			email.html = new Text(html.toString())
 			email.plainText = new Text(text.toString().trim())
+			
+			//set subject
+			email.subject = SUBJECT_BEGIN + nl.name + " Edition - " + getTodaysDate()
+			
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
 
@@ -240,7 +246,6 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			}
 			
 			tx.begin() //have to start another transaction, it will be closed by the container
-			nl.lastRenderedDate = Calendar.getInstance().getTime()
 
 			return email
 		} catch (Exception e) {
@@ -252,16 +257,14 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		Properties props = new Properties();
 		Session session = Session.getDefaultInstance(props, null);
 			
-		String subject = SUBJECT_BEGIN + getTodaysDate()
+		String subject = email.subject
 		
 		try {
             Message msg = new MimeMessage(session);
 
-            msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
+            msg.setFrom(new InternetAddress("admin@getmorningmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
-							new InternetAddress(email.user.email, email.user.name));
-			msg.addRecipient(Message.RecipientType.BCC, 
-							new InternetAddress("bebeastie@gmail.com", "Blake Barnes"));
+							new InternetAddress(email.user.email));
 			msg.setSubject(subject);
            
             MimeMultipart mp = new MimeMultipart();
