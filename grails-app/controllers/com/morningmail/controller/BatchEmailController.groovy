@@ -28,11 +28,11 @@ class BatchEmailController {
 		for (Newsletter nl: newsletters) {
 			log.info("Prepare and render email for newsletter: " + nl.id)
 			Queue queue = QueueFactory.getQueue("mail-prepare-queue")
-			queue.add(url("/email/fetch/" + KeyFactory.keyToString(nl.id)))
+			queue.add(url("/email/fetch/" + nl.id))
 			totalEmails+=nl.subscribers.size()
 			
 			for(Key k: nl.subscribers) {
-				queue.add(url("/email/render/" + KeyFactory.keyToString(nl.id) + "/" 
+				queue.add(url("/email/render/" + nl.id + "/" 
 					+ KeyFactory.keyToString(k)))
 			}
 		}
