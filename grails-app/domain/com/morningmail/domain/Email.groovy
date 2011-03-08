@@ -27,6 +27,9 @@ class Email implements Serializable {
 	Text html
 
 	@Basic
+	String subject
+	
+	@Basic
 	Date desiredDeliveryDate	
 	
 	@Basic
