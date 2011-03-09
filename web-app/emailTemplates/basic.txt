@@ -1,0 +1,15 @@
+<!-- *|DATE|* -->
+MorningMail
+<!-- *|EDITION|* --> Edition
+
+View this email in your browser:
+<!-- *|ARCHIVE|* -->
+
+
+<!-- *|CONTENT|* -->
+Have a great day, 
+The MorningMail Team
+
+Unsubscribe: <!-- *|UNSUBSCRIBE|* -->
+View this email in your browser: <!-- *|ARCHIVE|* -->
+
