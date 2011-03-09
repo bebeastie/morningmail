@@ -31,7 +31,7 @@ import groovy.util.ConfigObject;
 import org.codehaus.groovy.grails.commons.*
 
 public class WebUtils {
-	public static final String EMAIL_CONTROLLER = "email/link";
+	public static final String EMAIL_CONTROLLER = "/email/link";
 	
 	private static String fetchUrlBasic(String fetchUrl) throws ClientProtocolException, IOException {
 		URL url = new URL(fetchUrl);
@@ -95,7 +95,11 @@ public class WebUtils {
 		return sb.toString()
 	}
 	
-	public static getUrl(String path) {
+	public static getAbsoluteUrl(String controller, String action, Map params) {
+		return ConfigurationHolder.config.grails.serverURL + getUrl(controller, action, params)
+	}
+	
+	public static getAbsoluteUrl(String path) {
 		return ConfigurationHolder.config.grails.serverURL + path;
 	}
 }
