@@ -7,7 +7,7 @@ import com.morningmail.domain.Email
 import com.morningmail.domain.Feed
 import com.morningmail.domain.PersonalFeed;
 import com.morningmail.services.FeedService
-import com.morningmail.services.PersonalFeedService
+import com.morningmail.services.PersonalFeedService 
 import com.morningmail.utils.WebUtils;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text
@@ -42,6 +42,33 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	
 	public static final String SUBJECT_BEGIN = "MorningMail - "
 	
+	private static final TEMPLATE_TITLE = "<!-- *|TITLE|* -->"
+	private static final TEMPLATE_LOGO = "<!-- *|LOGO|* -->"
+	private static final TEMPLATE_DATE = "<!-- *|DATE|* -->"
+	private static final TEMPLATE_PERSONALIZE = "<!-- *|PERSONALIZE|* -->"
+	private static final TEMPLATE_EDITION = "<!-- *|EDITION|* -->"
+	private static final TEMPLATE_CURATOR_INFO = "<!-- *|CURATOR_INFO|* -->"
+	private static final TEMPLATE_CONTENT = "<!-- *|CONTENT|* -->"
+	private static final TEMPLATE_SENT_TO = "<!-- *|SENT_TO|* -->"
+	private static final TEMPLATE_UNSUBSCRIBE = "<!-- *|UNSUBSCRIBE|* -->"
+	private static final TEMPLATE_SUBSCRIBE = "<!-- *|SUBSCRIBE|* -->"
+	
+	private static final String getSubject(Newsletter nl) {
+		SUBJECT_BEGIN + nl.name + " Edition - " + getTodaysDate()
+	}
+	
+	private static final String getLogoUrl() {
+		return WebUtils.getAbsoluteUrl("/images/logo2.png");
+	}
+	
+	private static final String getUnsubscribeUrl(String emailId) {
+		return WebUtils.getAbsoluteUrl('newsletter', 'unsubscribe', [emailId:emailId])
+	}
+	
+	private static final String getSubscribeUrl(Newsletter nl) {
+		return WebUtils.getAbsoluteUrl('newsletter', 'view', [name:nl.name])
+	}
+	
 	public static final String getPlainTextHeader() {
 		return "MorningMail - " + getTodaysDate() + "\n\n"
 	}
@@ -60,63 +87,6 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		return sb.toString()
 	}
 	
-	public static final String getHtmlHeader(Newsletter nl, File css) {
-		StringBuffer header = new StringBuffer()
-		header.append("<html><head>")
-			.append(getCss(css))
-			.append("<title>")
-			.append("MorningMail - ").append(nl.getName()).append(" Edition").append(" - ").append(getTodaysDate())
-			.append("</title></head>")
-			.append("<body>")
-			.append("<div id=\"date\">").append(getTodaysDate()).append("</div>")
-			.append("<div id=\"main-header\">")
-			.append("<div id=\"logo\"><img src=\"").append(WebUtils.getUrl("images/logo2.png")).append("\"/></div>")
-			.append("<div id=\"title\">").append(nl.getName()).append(" Edition</div>")
-			.append("</div><hr/>")
-		return header.toString()
-	}
-	
-	public static final String getHtmlCuratorInfo(Newsletter nl) {
-		StringBuffer cInfo = new StringBuffer();
-		cInfo.append("<div>")
-			.append("<b>")
-			.append(nl.name.toUpperCase())
-			.append("S".equals(nl.name.toUpperCase().substring(nl.name.length() - 1)) ? "'" : "'S")
-			.append(" CURATORS")
-			.append("</b>")
-			.append("<br/>")
-			.append(nl.curatorInfo.getValue())
-			.append("</div><hr/>")
-		return cInfo.toString();
-	}
-	
-	public static final String getHtmlFooter(Newsletter nl, String emailAddress, String emailId) {
-		StringBuffer footer = new StringBuffer()
-			.append("Have a great day,<br/>The MorningMail Team").append("<br/><br/>")
-		.append("<center>Sent to: " + emailAddress + " | ")
-		.append(WebUtils.createLinkElement('newsletter', 'unsubscribe', [emailId:emailId], 'Unsubscribe'))
-		.append(" | ").append(WebUtils.createLinkElement('newsletter', 'view', [name:nl.name], 'Subscribe'))
-		.append("<br/>Want to make your own newsletter? <a href=\"mailto:info@getmorningmail.com?subject=Invite request\">Email Us</a> for an invitation")
-		.append("</center>")
-		.append("</body></html>")
-		return footer.toString()
-	}
-	
-	public static final String getCss(File css) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("<style type=\"text/css\">")	
-		String NL = System.getProperty("line.separator");
-		Scanner scanner = new Scanner(new FileInputStream(css), "UTF-8");
-		try {
-		  while (scanner.hasNextLine()){
-			sb.append(scanner.nextLine() + NL);
-		  }
-		} finally{
-		  scanner.close();
-		}
-		sb.append("</style>")
-		return sb.toString()
-	}
 	
 	private static String getTodaysDate() {
 		Date now = Calendar.getInstance().getTime()
@@ -160,6 +130,8 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		}	
 	}
 	
+	
+	
 	public Email render(Newsletter nl, User u) {
 		try {
 			em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
@@ -168,17 +140,19 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			StringBuffer text = new StringBuffer()
 			StringBuffer html = new StringBuffer()
 			
-			html.append(getHtmlHeader(nl, applicationContext.getResource("/css/email.css").getFile()))
 			text.append(getPlainTextHeader())
 			
-			html.append(getHtmlCuratorInfo(nl));
 			text.append(getPlainTextCuratorInfo(nl));
 			//now time to save it
 			
+			//generate key
 			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), u.email)
 				.addChild(Email.class.getSimpleName(), UUID.randomUUID().toString().replaceAll('-', ''))
 				.getKey()
-				
+			
+			//iterate through interests
+			StringBuffer textBody = new StringBuffer()
+			StringBuffer htmlBody = new StringBuffer()
 			for (Key k: nl.interests) {
 				Interest interest = Interest.findById(k)
 				
@@ -211,15 +185,43 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 				}
 				
 				if (htmlFeed != "") {
-					html.append(htmlFeed).append("<br/>")
+					htmlBody.append(htmlFeed).append("<br/>")
 				} 
 				
 				if (textFeed != "") {
-					text.append(textFeed).append("<\n\n>")
+					textBody.append(textFeed).append("<\n\n>")
 				} 		
 			}
 			
-			html.append(getHtmlFooter(nl,u.email, KeyFactory.keyToString(emailId)))
+			File template = applicationContext.getResource("/emailTemplates/basic.html").getFile()
+			String NL = System.getProperty("line.separator");
+			
+			Scanner scanner = new Scanner(new FileInputStream(template), "UTF-8");
+			StringBuffer sb = new StringBuffer();
+			try {
+			  while (scanner.hasNextLine()){
+				String line = scanner.nextLine()
+				String originalLine = new String(line);
+				
+				if (line.contains(new String("<!-- *|"))) {
+					line = line.replace(TEMPLATE_TITLE, getSubject(nl))
+					line = line.replace(TEMPLATE_LOGO, getLogoUrl())
+					line = line.replace(TEMPLATE_DATE, getTodaysDate())
+					line = line.replace(TEMPLATE_PERSONALIZE, "#")
+					line = line.replace(TEMPLATE_EDITION, nl.name)
+					line = line.replace(TEMPLATE_CURATOR_INFO, nl.curatorInfo.getValue())
+					line = line.replace(TEMPLATE_CONTENT, htmlBody.toString())
+					line = line.replace(TEMPLATE_SENT_TO, u.email)
+					line = line.replace(TEMPLATE_UNSUBSCRIBE, getUnsubscribeUrl(KeyFactory.keyToString(emailId)))
+					line = line.replace(TEMPLATE_SUBSCRIBE, getSubscribeUrl(nl))
+				}
+				html.append(line + NL);
+			  }
+			} finally{
+			  scanner.close();
+			}
+			
+
 			text.append(getPlainTextFooter(u.email, KeyFactory.keyToString(emailId)))
 						
 			Email email = new Email()
@@ -262,7 +264,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		try {
             Message msg = new MimeMessage(session);
 
-            msg.setFrom(new InternetAddress("admin@getmorningmail.com", "MorningMail"));
+            msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
 							new InternetAddress(email.user.email));
 			msg.setSubject(subject);
