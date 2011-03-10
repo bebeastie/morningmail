@@ -129,6 +129,25 @@ class BootStrap {
 			feed.save()
 		}
 
+		//Blog: Redeye VC
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_REDEYE_VC)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_REDEYE_VC
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://feeds.feedburner.com/redeyevc"
+			feed.title = "Redeye VC"
+			feed.save()
+		}
+
+		//Blog: Chris Dixon
+		if (!Feed.findBySystemName(GlobalFeedService.SN_BLOG_CHRIS_DIXON)) {
+			Feed feed = new Feed()
+			feed.systemName = GlobalFeedService.SN_BLOG_CHRIS_DIXON
+			feed.type = Feed.TYPE_GENERIC_RSS
+			feed.url = "http://cdixon.org/feed"
+			feed.title = "Chris Dixon"
+			feed.save()
+		}
 		
 		//END FEED CONFIG
 		
@@ -279,6 +298,30 @@ class BootStrap {
 			interest.displayName = "SKMurphy"
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
 			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_SK_MURPHY).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+		
+		if (!Interest.findBySystemName(Interest.SN_BLOG_REDEYE_VC)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_REDEYE_VC
+			interest.displayName = "Redeye VC"
+			interest.feedStyle = Interest.SN_BLOG_REDEYE_VC
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_REDEYE_VC).id
+			interest.maxStories = 5
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.save()
+		}
+
+		if (!Interest.findBySystemName(Interest.SN_BLOG_CHRIS_DIXON)) {
+			Interest interest = new Interest()
+			interest.systemName = Interest.SN_BLOG_CHRIS_DIXON
+			interest.displayName = "Chris Dixon"
+			interest.feedStyle = Interest.SN_BLOG_CHRIS_DIXON
+			interest.globalFeedId = Feed.findBySystemName(GlobalFeedService.SN_BLOG_CHRIS_DIXON).id
 			interest.maxStories = 5
 			interest.maxWordsPerStory = 40
 			interest.includeItemMoreLink = false
