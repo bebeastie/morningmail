@@ -69,6 +69,7 @@ class RomeFeedService implements FeedService {
 						textTitle = textTitle.replaceAll("«", "'")
 						textTitle = textTitle.replaceAll("Õ", "'")
 						textTitle = textTitle.replaceAll("Ð", "-")
+						textTitle = textTitle.replaceAll("Ñ", "-")
 						textTitle = textTitle.replaceAll("Ò", "\"")
 						textTitle = textTitle.replaceAll("Ó", "\"")
 						
@@ -108,8 +109,8 @@ class RomeFeedService implements FeedService {
 						Date now = cal.getTime();
 						long diff = now.getTime() - entry.getPublishedDate().getTime();
 						
-						log.info("Not within 24 hours:" + entry.getPublishedDate().toString())
-						log.info("Difference is: " + diff)
+//						log.info("Not within 24 hours:" + entry.getPublishedDate().toString())
+//						log.info("Difference is: " + diff)
 					}
 				}
 			}

@@ -17,6 +17,8 @@ class GlobalFeedService implements FeedService, InitializingBean {
 	public static final String SN_BLOG_BOTH_SIDES_TABLE = "both_sides_table"
 	public static final String SN_BLOG_SEAN_ELLIS = "sean_ellis"
 	public static final String SN_BLOG_SK_MURPHY = "sk_murphy"
+	public static final String SN_BLOG_REDEYE_VC = "redeye_vc"
+	public static final String SN_BLOG_CHRIS_DIXON = "chris_dixon"
 	
 	void afterPropertiesSet() {
 	}
