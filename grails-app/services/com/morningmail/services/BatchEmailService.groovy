@@ -1,6 +1,7 @@
 package com.morningmail.services
 
 import javax.persistence.*
+
 import org.springframework.orm.jpa.EntityManagerFactoryUtils
 import java.util.ArrayList;
 import java.util.Date
@@ -35,6 +36,7 @@ class BatchEmailService {
 		Date lowerDate = DateUtils.getNormalizedTime(now, -LOWER_DATE_BOUND)
 		Date upperDate = DateUtils.getNormalizedTime(now, UPPER_DATE_BOUND)
 		
+		log.info("Now is: " + now)
 		log.info("Searching for newsletters between " + lowerDate + " and " + upperDate);
 	
 		Date lastRenderedDate = new Date(now.getTime() - PREVIOUS_PERIOD)
