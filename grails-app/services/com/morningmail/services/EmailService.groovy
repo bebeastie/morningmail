@@ -40,7 +40,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	public static Interest GOOGLE_CAL
 	public static Interest READ_LATER
 	
-	public static final String SUBJECT_BEGIN = "MorningMail - "
+	private static final String SUBJECT_BEGIN = "MorningMail - "
 	
 	private static final TEMPLATE_TITLE = "<!-- *|TITLE|* -->"
 	private static final TEMPLATE_LOGO = "<!-- *|LOGO|* -->"
@@ -52,6 +52,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	private static final TEMPLATE_SENT_TO = "<!-- *|SENT_TO|* -->"
 	private static final TEMPLATE_UNSUBSCRIBE = "<!-- *|UNSUBSCRIBE|* -->"
 	private static final TEMPLATE_SUBSCRIBE = "<!-- *|SUBSCRIBE|* -->"
+	private static final TEMPLATE_ARCHIVE = "<!-- *|ARCHIVE|* -->"
 	
 	private static final String getSubject(Newsletter nl) {
 		SUBJECT_BEGIN + nl.name + " Edition - " + getTodaysDate()
@@ -69,25 +70,14 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		return WebUtils.getAbsoluteUrl('newsletter', 'view', [name:nl.name])
 	}
 	
-	public static final String getPlainTextHeader() {
-		return "MorningMail - " + getTodaysDate() + "\n\n"
+	private static final String getViewBrowserUrl(String emailId) {
+		return WebUtils.getAbsoluteUrl('email','view',[emailId:emailId])
 	}
 	
-	public static final String getPlainTextCuratorInfo(Newsletter nl) {
-		StringBuffer cInfo = new StringBuffer();
-		cInfo.append(nl.curatorInfo.getValue())
-		return cInfo.toString();
+	private static final String getPersonalizeUrl() {
+		return "mailto:admin@getmorningmail.com?subject=Request+invite+to+MorningMail"
 	}
-	
-	public static final String getPlainTextFooter(String emailAddress, String emailId) {
-		StringBuffer sb = new StringBuffer()
-		sb.append("Have a great day,\nThe MorningMail Team")
-		sb.append("Sent to: " + emailAddress + " | Unsubscribe:"  )
-		sb.append("\n"+WebUtils.getUrl('newsletter', 'unsubscribe', [emailId:emailId]))
-		return sb.toString()
-	}
-	
-	
+		
 	private static String getTodaysDate() {
 		Date now = Calendar.getInstance().getTime()
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, MMM d yyyy")
@@ -139,12 +129,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			
 			StringBuffer text = new StringBuffer()
 			StringBuffer html = new StringBuffer()
-			
-			text.append(getPlainTextHeader())
-			
-			text.append(getPlainTextCuratorInfo(nl));
-			//now time to save it
-			
+					
 			//generate key
 			Key emailId = new KeyFactory.Builder(User.class.getSimpleName(), u.email)
 				.addChild(Email.class.getSimpleName(), UUID.randomUUID().toString().replaceAll('-', ''))
@@ -189,25 +174,26 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 				} 
 				
 				if (textFeed != "") {
-					textBody.append(textFeed).append("<\n\n>")
+					textBody.append(textFeed).append("\n\n")
 				} 		
 			}
 			
-			File template = applicationContext.getResource("/emailTemplates/basic.html").getFile()
-			String NL = System.getProperty("line.separator");
-			
-			Scanner scanner = new Scanner(new FileInputStream(template), "UTF-8");
-			StringBuffer sb = new StringBuffer();
+			//build HTML version
+			File htmlTemplate = applicationContext.getResource("/emailTemplates/basic.html").getFile()			
+			Scanner htmlScanner = new Scanner(new FileInputStream(htmlTemplate), "UTF8");
+
 			try {
-			  while (scanner.hasNextLine()){
-				String line = scanner.nextLine()
+			  String NL = System.getProperty("line.separator");
+			  while (htmlScanner.hasNextLine()){
+				String line = htmlScanner.nextLine()
 				String originalLine = new String(line);
 				
 				if (line.contains(new String("<!-- *|"))) {
+					line = line.replace(TEMPLATE_ARCHIVE, getViewBrowserUrl(KeyFactory.keyToString(emailId)))
 					line = line.replace(TEMPLATE_TITLE, getSubject(nl))
 					line = line.replace(TEMPLATE_LOGO, getLogoUrl())
 					line = line.replace(TEMPLATE_DATE, getTodaysDate())
-					line = line.replace(TEMPLATE_PERSONALIZE, "#")
+					line = line.replace(TEMPLATE_PERSONALIZE, getPersonalizeUrl())
 					line = line.replace(TEMPLATE_EDITION, nl.name)
 					line = line.replace(TEMPLATE_CURATOR_INFO, nl.curatorInfo.getValue())
 					line = line.replace(TEMPLATE_CONTENT, htmlBody.toString())
@@ -218,12 +204,33 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 				html.append(line + NL);
 			  }
 			} finally{
-			  scanner.close();
+			  htmlScanner.close();
 			}
-			
 
-			text.append(getPlainTextFooter(u.email, KeyFactory.keyToString(emailId)))
-						
+			//build text version
+			File textTemplate = applicationContext.getResource("/emailTemplates/basic.txt").getFile()
+			Scanner textScanner = new Scanner(new FileInputStream(textTemplate), "UTF8");
+
+			log.info("TXTER: " + textBody.toString())
+			try {
+			  String NL = System.getProperty("line.separator");
+			  while (textScanner.hasNextLine()){
+				String line = textScanner.nextLine()
+				String originalLine = new String(line);
+				
+				if (line.contains(new String("<!-- *|"))) {
+					line = line.replace(TEMPLATE_ARCHIVE, getViewBrowserUrl(KeyFactory.keyToString(emailId)))
+					line = line.replace(TEMPLATE_DATE, getTodaysDate())
+					line = line.replace(TEMPLATE_EDITION, nl.name)
+					line = line.replace(TEMPLATE_CONTENT, textBody.toString())
+					line = line.replace(TEMPLATE_UNSUBSCRIBE, getUnsubscribeUrl(KeyFactory.keyToString(emailId)))
+				}
+				text.append(line + NL);
+			  }
+			} finally{
+			  textScanner.close();
+			}
+				
 			Email email = new Email()
 			email.id = emailId
 			email.user = u
@@ -231,7 +238,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			
 			//set body
 			email.html = new Text(html.toString())
-			email.plainText = new Text(text.toString().trim())
+			email.plainText = new Text(text.toString())
 			
 			//set subject
 			email.subject = SUBJECT_BEGIN + nl.name + " Edition - " + getTodaysDate()
@@ -269,15 +276,21 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 							new InternetAddress(email.user.email));
 			msg.setSubject(subject);
            
+			log.info("Email:" + email.plainText.getValue())
             MimeMultipart mp = new MimeMultipart();
-            BodyPart tp = new MimeBodyPart();
-            tp.setText(email.plainText.getValue(), "UTF-8");
-            mp.addBodyPart(tp);
+            BodyPart txt = new MimeBodyPart();
+			txt.setText(email.plainText.getValue(), "utf-8");
+			txt.setHeader("Content-Type","text/plain; charset=\"utf-8\"");
+			txt.setHeader("Content-Transfer-Encoding", "quoted-printable");
+			
+            mp.addBodyPart(txt);
 
-            tp = new MimeBodyPart();
-            tp.setContent(email.html.getValue()
-				, "text/html");
-            mp.addBodyPart(tp);
+            BodyPart html = new MimeBodyPart();
+            html.setContent(email.html.getValue()
+				, "text/html; charset=utf-8");
+			html.setHeader("Content-Type","text/html; charset=\"utf-8\"");
+			html.setHeader("Content-Transfer-Encoding", "quoted-printable");
+            mp.addBodyPart(html);
 
             mp.setSubType("alternative");
 
