@@ -23,7 +23,7 @@
 		<br/>
 		
 		<p><a style="font-size:20px;" href="${createLink(controller:'newsletter', action:'view', params:[name:'lean startups'])}">
-		Looking for the lean startup edition?</a></p>
+		Looking for the lean startups edition?</a></p>
 		
 		
 	</center>
