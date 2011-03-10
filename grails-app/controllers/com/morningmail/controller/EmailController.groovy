@@ -58,6 +58,26 @@ class EmailController {
 		render(view:"index", model:[returnValue:"Keep Alive"])
 	}
 	
+	
+	/**
+	 * Used to display emails in a web browser
+	 */
+	def view = {
+		String emailId = params.emailId
+		String emailHtml = new String("")
+		if (emailId) {
+			try {
+				Email email = Email.findById(KeyFactory.stringToKey(emailId))
+				emailHtml = email.html.getValue()
+			} catch (Exception e) {
+				log.error("Error viewing email with ID $emailId ", e)
+				emailHtml = ""
+			}
+		}
+		render(view:'view', model:[emailHtml:emailHtml])
+	}
+	
+	
 	/**
 	 * Records a link click and forwards to the appropriate site. This is called
 	 * when a user clicks a link in an email.
