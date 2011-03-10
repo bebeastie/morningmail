@@ -45,14 +45,14 @@ grails.logging.jul.usebridge = true
 grails.spring.bean.packages = []
 grails.views.javascript.library="jquery"
 
-google.appengine.application="activebars"
+google.appengine.application="apponthebowery"
 google.appengine.security.requireAdmin = ["/batchEmail/*", "/email/send/*", "/email/render/*", 
 	"/email/fetch/*","/email/keepAlive/*","/globalFeed/*","/debug/*"]
 
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.activebars.appspot.com"
+        grails.serverURL = "http://www.getmorningmail.com"
     }
     development {
         grails.serverURL = "http://localhost:8080"
