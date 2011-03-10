@@ -9,7 +9,6 @@ import com.morningmail.utils.TextUtils;
 import com.google.appengine.api.datastore.Text
 import org.jsoup.nodes.Document
 import org.jsoup.Jsoup;
-import org.mortbay.log.Log;
 
 import java.util.Calendar;
 import java.util.Date
@@ -65,6 +64,15 @@ class RomeFeedService implements FeedService {
 							.append("\n")
 							.toString()
 						
+						//there are some weird characters out there. Copied from MS word docs?
+						textTitle = textTitle.replaceAll("Ô", "'")
+						textTitle = textTitle.replaceAll("«", "'")
+						textTitle = textTitle.replaceAll("Õ", "'")
+						textTitle = textTitle.replaceAll("Ð", "-")
+						textTitle = textTitle.replaceAll("Ò", "\"")
+						textTitle = textTitle.replaceAll("Ó", "\"")
+						
+						
 						Document doc
 						try {
 							doc = Jsoup.parse(entry.getDescription().getValue());
@@ -84,7 +92,7 @@ class RomeFeedService implements FeedService {
 						}
 						
 						html.append(description)
-						text.append(description)
+//						text.append(description)
 						
 						if (interest.includeItemMoreLink) {
 							html.append("<a href=\""+WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink())+"\">More</a>")
