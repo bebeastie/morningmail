@@ -23,6 +23,9 @@ class UserController {
 	def interestService
 	def newsletterService
 	
+	def index = {
+		render(view:'index')
+	}
 	/**
 	 * Called when we create a user
 	 */
@@ -69,11 +72,11 @@ class UserController {
 			return
 		}
 			
-		render(view:'/index', model:[user:user, newsletter:nl, inviteCode:params.inviteCode])
+		render(view:'index', model:[user:user, newsletter:nl, inviteCode:params.inviteCode])
 	}
 	
 	def login = {
-		String view = "/index"
+		String view = "index"
 		
 		if (LOGIN_DISPLAY_MINIMAL.equals(params.display)) {
 			view = LOGIN_DISPLAY_MINIMAL
@@ -108,7 +111,7 @@ class UserController {
 	
 	def logout = {
 		session.invalidate()
-		redirect(uri:'/')
+		redirect(uri:'/user')
 		return
 	}
 	
@@ -119,7 +122,7 @@ class UserController {
 	 */
 	def personalize = {
 		if (!session.userEmail) {
-			redirect(uri:'/')
+			redirect(uri:'/user')
 			return
 		}
 				 
@@ -148,21 +151,4 @@ class UserController {
 		redirect(action:'personalize', params: params)
 	
 	}
-	
-	def printInterests = {
-		if (!session.user) {
-			redirect(action:'index')
-		}
-		
-		User user = session.user
-		
-		System.out.println("Interests for user: " + user.id)
-		for (Interest interest : user.interests) {
-			System.out.println("Interest: " + interest.systemName)
-		}
-		
-		render(view:'index')
-	}
-
-
 }
