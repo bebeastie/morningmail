@@ -92,10 +92,14 @@ public class DateUtils {
 		nowCal.setTimeZone(TimeZone.getTimeZone("UTC"));
 		nowCal.setTime(now);
 		
+//		System.out.println("Nowcal is:" + nowCal.getTime());
+		
 		//now set the hours, minute and sec of the base cal to the now cal
-		baseCal.set(Calendar.HOUR, nowCal.get(Calendar.HOUR));
+		baseCal.set(Calendar.HOUR_OF_DAY, nowCal.get(Calendar.HOUR_OF_DAY));
 		baseCal.set(Calendar.MINUTE, nowCal.get(Calendar.MINUTE));
 		baseCal.set(Calendar.SECOND, nowCal.get(Calendar.SECOND));
+		
+//		System.out.println("Basecal is:" + baseCal.getTime());
 		
 		//now caulcate the offset
 		return new Date(baseCal.getTime().getTime() + offset);
