@@ -9,6 +9,6 @@
   </queue>
   <queue>
     <name>mail-prepare-queue</name>
-    <rate>3/s</rate>
+    <rate>1/s</rate>
   </queue>
 </queue-entries>
