@@ -89,4 +89,11 @@ class DebugController {
 		}
 		
 	}
+	
+	def deleteAllEmail = {
+		em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
+		Query q = em.createQuery("delete from Email e");
+		int number = q.executeUpdate();
+		render(view:'index', model:[returnValue:number])
+	}
 }
