@@ -3,7 +3,7 @@
 <head>
 <g:javascript library="jquery" plugin="jquery"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>MorningMail - ${newsletter?.name} Edition</title>
 
 <style type="text/css">
 body {
@@ -173,34 +173,21 @@ td#sample {
 
 </style>
 
-<script>
-/*
-function doClear(theText) {
-	    if (theText.value == theText.defaultValue) {
-	        theText.value = ""
-	    }
-	}
-*/
-</script>
 </head>
 <body>
 	<div id="main-header">
-  		<div id="logo"><img src="http://localhost:8080/images/logo2.png"/></div>
-  		<div id="title">Lean Startups Edition</div>
+  		<div id="logo"><img src="/images/logo2.png"/></div>
+  		<div id="title">${newsletter.name} Edition</div>
   	</div>
-  	<div id="getyourown"><a href="#">Want to personalize your own newsletter?</a></div>  
-
-
-<!-- 
-<div id="header">
-	<img src="/images/logo2.png">
-	
-	<div id="getyourown">Want to personalize your own newsletter? <a href="#">Request an invite</a></div>
-</div>
- -->
+  	<div id="getyourown">
+  		Want to personalize your own newsletter?
+  		<a href="mailto:admin@getmorningmail.com?subject=Request+invite+to+MorningMail">
+  		 E-mail us
+  		</a>
+  	</div>  
 
 <center>
-<table cellspacing="15px">
+<table style="clear:both;" cellspacing="15px">
 	<tr>
 		<td rowspan="2" id="sample" align="center" valign="center">
 			<img src="/images/lean_startups_sample.png"/>
@@ -223,9 +210,9 @@ function doClear(theText) {
 				<td>
 				<table cellspacing="2">
 					<tr>
-						<td><img src="/images/twitter-16x16.png"></td>
-						<td><img src="/images/facebook-16x16.png"></td>
-						<td><img src="/images/linkedin-16x16.png"></td>
+						<td><a href="http://www.twitter.com/glusman"><img src="/images/twitter-16x16.png"></a></td>
+						<td><a href="http://www.facebook.com/glusman"><img src="/images/facebook-16x16.png"></a></td>
+						<td><a href="http://www.linkedin.com/in/glusman"><img src="/images/linkedin-16x16.png"></a></td>
 						<td><img src="/images/foursquare-16x16.png"></td>
 					</tr>
 				</table>
