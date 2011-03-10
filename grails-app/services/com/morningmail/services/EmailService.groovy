@@ -75,7 +75,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	}
 	
 	private static final String getPersonalizeUrl() {
-		return "mailto:admin@getmorningmail.com?subject=Request+invite+to+MorningMail"
+		return "mailto:admin@getmorningmail.com?subject=Thoughts+on+MorningMail"
 	}
 		
 	private static String getTodaysDate() {
@@ -211,7 +211,6 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			File textTemplate = applicationContext.getResource("/emailTemplates/basic.txt").getFile()
 			Scanner textScanner = new Scanner(new FileInputStream(textTemplate), "UTF8");
 
-			log.info("TXTER: " + textBody.toString())
 			try {
 			  String NL = System.getProperty("line.separator");
 			  while (textScanner.hasNextLine()){
@@ -271,7 +270,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 		try {
             Message msg = new MimeMessage(session);
 
-            msg.setFrom(new InternetAddress("blake.barnes@gmail.com", "MorningMail"));
+            msg.setFrom(new InternetAddress("admin@getmorningmail.com", "MorningMail"));
 			msg.addRecipient(Message.RecipientType.TO,
 							new InternetAddress(email.user.email));
 			msg.setSubject(subject);
