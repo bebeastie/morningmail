@@ -115,34 +115,6 @@ class UserController {
 		return
 	}
 	
-	
-	/**
-	 * Called once a user is created and they would like
-	 * to personalize the content they have
-	 */
-	def personalize = {
-		if (!session.userEmail) {
-			redirect(uri:'/user')
-			return
-		}
-				 
-		User user = User.findByEmail(session.userEmail)
-
-		def interestList = interestService.getAll(user)
-		def interestMap = new HashMap<Key, Interest>()
-		for(Interest i: interestList) 
-			interestMap.put(i.id, i)	
-		
-		if(params.saveInterests) {
-			def interests = params.get("interests[]")
-			if (interests) 
-				interestService.setSelected(user, interests)
-		} 
-
-		render(view:'personalize', model:[user:user, 
-			interestList:interestList, interestMap:interestMap])
-	}
-
 	/**
 	 * Called by Google once the user grants or denies access
 	 */
