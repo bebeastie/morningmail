@@ -184,7 +184,13 @@ class NewsletterController {
 		}
 		
 		if (!params.save) {
-			render(view:'addInterest', model:[newsletterId:newsletterId])
+			render(view:'addInterest', model:[params:params])
+			return
+		}
+		
+		if (!params.displayName || !params.url) {
+			flash.message = "Please supply a display name and a feed URL"
+			render(view:'addInterest', model:[params:params])
 			return
 		}
 		
@@ -193,8 +199,6 @@ class NewsletterController {
 		
 		if (u && nl && nl.owner.equals(u)) {
 			Interest interest = new Interest()
-			Feed feed
-			
 			interest.displayName = params.displayName
 			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
 			interest.owner = u.id
@@ -203,35 +207,46 @@ class NewsletterController {
 			interest.includeItemMoreLink = false
 			interest.includeItemTitle = true
 			
-			if (interest.validate()) {
-				//now create or find feed
-				feed = Feed.findByUrl(params.url)
-				if (!feed) {
-					feed = new Feed()
-					feed.type = Feed.TYPE_GENERIC_RSS
-					feed.url = params.url
-					
-					Feed.withTransaction() {
-						feed.save(flush:true)
-					}
+			String feedUrl = params.url
+			//safari displays this in the browser: feed://www.buzzfeed.com/index.xml
+			if (feedUrl.length() >= 4 && feedUrl.substring(0, 4).equals("feed")) 
+				feedUrl = "http" + feedUrl.substring(4)
+			
+			Feed feed = Feed.findByUrl(feedUrl)
+			
+			if (!feed && !WebUtils.isValidFeed(feedUrl)) {
+				flash.message = "Invalid feed URL"
+				render(view:'addInterest', model:[newsletterId:newsletterId])
+				return
+			} else if(!interest.validate()){
+				flash.message = "Please enter a display name"
+				render(view:'addInterest', model:[newsletterId:newsletterId])
+				return
+			}
 
-				}
-				interest.globalFeedId = feed.id
+			//now create or find feed
+			if (!feed) {
+				feed = new Feed()
+				feed.type = Feed.TYPE_GENERIC_RSS
+				feed.url = feedUrl
 				
-				if (feed.id != null) {
-					Interest.withTransaction() {
-						interest.save(flush:true)
-					}
-					
-					Newsletter.withTransaction() {
-						nl.interests.add(interest.id)
-						nl.merge(flush:true)
-					}
-					
-					redirect(controller:'newsletter', action:'edit', params:[id:newsletterId])
-					return
+				Feed.withTransaction() {
+					feed.save(flush:true)
 				}
 			}
+			interest.globalFeedId = feed.id	
+
+			Interest.withTransaction() {
+				interest.save(flush:true)
+			}
+					
+			Newsletter.withTransaction() {
+				nl.interests.add(interest.id)
+				nl.merge(flush:true)
+			}
+					
+			redirect(controller:'newsletter', action:'edit', params:[id:newsletterId])
+			return
 		} else {
 			response.sendError(500)
 			return
