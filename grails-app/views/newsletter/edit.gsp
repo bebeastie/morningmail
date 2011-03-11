@@ -33,7 +33,7 @@
 		<g:hiddenField name="save" value="${true}" />
 		<g:hiddenField name="id" value="${newsletter.id}"/>
 		
-		<label for="interests">Select your interests from the list below or <a href="/interest/create">add your own</a>.</label> 
+		<label for="interests">Select your interests from the list below or <a href="${createLink(action:'addInterest', params:[newsletterId:newsletter.id]) }">add your own</a>.</label> 
 		<select id="interests" multiple="multiple" name="interests[]" title="Click to Select an Interest"> 
 			<g:each var="interestKey" in="${newsletter.interests}">
 				<option value="${KeyFactory.keyToString(interestKey)}" selected="selected">${interestMap.get(interestKey).displayName}</option>			
