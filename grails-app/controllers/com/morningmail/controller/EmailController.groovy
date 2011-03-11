@@ -93,18 +93,19 @@ class EmailController {
 		try {
 			LinkClick lc = new LinkClick()
 			Email email = Email.findById(KeyFactory.stringToKey(params.email))
-			lc.email = email
-			lc.user = email.user
-			lc.interest = Interest.findById(KeyFactory.stringToKey(params.interest))
-			lc.feed = Feed.findById(KeyFactory.stringToKey(params.feed))
+			lc.email = email.id
+			lc.user = email.user.id
+			lc.interest = KeyFactory.stringToKey(params.interest)
+			lc.feed = KeyFactory.stringToKey(params.feed)
 			lc.url = decodedUrl
 			lc.timeClicked = new Date();
-			if (lc.validate())
+			if (lc.validate()) {
 				lc.save()
-			else
+			} else {
 				log.error("Had trouble saving LinkClick" + lc.errors.allErrors);
+			}
 		} catch (Exception e) {
-			log.error("Had trouble creating LinkClick.",e)
+			log.error("Had trouble creating LinkClick." +e)
 		}
 		
 		if (decodedUrl) 

@@ -12,16 +12,16 @@ class LinkClick implements Serializable {
 	Key id
 	
 	@Basic
-	Email email
+	Key email
 	
 	@Basic
-	User user
+	Key user
 	
 	@Basic
-	Feed feed
+	Key feed
 
 	@Basic
-	Interest interest
+	Key interest
 	
 	@Basic
 	String url
