@@ -30,6 +30,11 @@ import groovy.util.ConfigObject;
 
 import org.codehaus.groovy.grails.commons.*
 
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.io.SyndFeedInput;
+import java.io.StringReader;
+
 public class WebUtils {
 	public static final String EMAIL_CONTROLLER = "/email/link";
 	
@@ -44,6 +49,16 @@ public class WebUtils {
 		}
 		reader.close();
 		return buffer.toString();
+	}
+	
+	public static boolean isValidFeed(String url) {
+		SyndFeedInput input = new SyndFeedInput()
+		try {
+			SyndFeed syndFeed = input.build(new StringReader(fetchUrl(url)))
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 	
 	public static String fetchUrl(String url) throws ClientProtocolException, IOException {
