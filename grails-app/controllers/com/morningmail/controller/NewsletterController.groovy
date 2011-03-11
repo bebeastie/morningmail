@@ -4,6 +4,7 @@ import com.morningmail.domain.Newsletter;
 import com.morningmail.domain.Interest;
 import com.morningmail.domain.Email;
 import com.morningmail.domain.User;
+import com.morningmail.domain.Feed;
 import com.morningmail.utils.WebUtils;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -167,5 +168,73 @@ class NewsletterController {
 			user:user,
 			interestList:interestList, 
 			interestMap:interestMap])
+	}
+	
+	def addInterest = {
+		if (!session.userEmail) {
+			redirect(uri:'/')
+			return
+		}
+		
+		String newsletterId = params.newsletterId
+		
+		if (!newsletterId) {
+			response.sendError(500)
+			return
+		}
+		
+		if (!params.save) {
+			render(view:'addInterest', model:[newsletterId:newsletterId])
+			return
+		}
+		
+		User u = User.findByEmail(session.userEmail)
+		Newsletter nl = Newsletter.findById(newsletterId)
+		
+		if (u && nl && nl.owner.equals(u)) {
+			Interest interest = new Interest()
+			Feed feed
+			
+			interest.displayName = params.displayName
+			interest.feedStyle = Interest.FEED_STYLE_GLOBAL
+			interest.owner = u.id
+			interest.maxStories = new Integer(params.maxStories)
+			interest.maxWordsPerStory = 40
+			interest.includeItemMoreLink = false
+			interest.includeItemTitle = true
+			
+			if (interest.validate()) {
+				//now create or find feed
+				feed = Feed.findByUrl(params.url)
+				if (!feed) {
+					feed = new Feed()
+					feed.type = Feed.TYPE_GENERIC_RSS
+					feed.url = params.url
+					
+					Feed.withTransaction() {
+						feed.save(flush:true)
+					}
+
+				}
+				interest.globalFeedId = feed.id
+				
+				if (feed.id != null) {
+					Interest.withTransaction() {
+						interest.save(flush:true)
+					}
+					
+					Newsletter.withTransaction() {
+						nl.interests.add(interest.id)
+						nl.merge(flush:true)
+					}
+					
+					redirect(controller:'newsletter', action:'edit', params:[id:newsletterId])
+					return
+				}
+			}
+		} else {
+			response.sendError(500)
+			return
+		}
 	}
 }
