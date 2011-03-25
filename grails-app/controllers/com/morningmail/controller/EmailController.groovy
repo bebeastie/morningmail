@@ -114,4 +114,16 @@ class EmailController {
 			render(view:"forwardError")
 		
 	}
+	def pixel = {
+		String id = params.id
+		
+		System.out.println("Id: " + id)
+		BufferedImage pixel;
+		pixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		pixel.setRGB(0, 0, (0xFF));
+
+		response.setContentType("image/png");
+		OutputStream os = response.getOutputStream();
+		ImageIO.write(pixel, "png", os);
+	}
 }
