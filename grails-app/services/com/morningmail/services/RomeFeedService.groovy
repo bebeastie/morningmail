@@ -50,7 +50,7 @@ class RomeFeedService implements FeedService {
 					if (storyCount >= interest.maxStories)
 						break
 					
-					if (DateUtils.isWithin24Hours(entry.getPublishedDate())) {
+					if (entry.getPublishedDate() && DateUtils.isWithin24Hours(entry.getPublishedDate())) {
 						
 						String htmlTitle = new StringBuffer("<a href=\"")
 							.append(WebUtils.encodeLink(interest.id, feed.id,  emailId, entry.getLink()))
@@ -104,14 +104,7 @@ class RomeFeedService implements FeedService {
 						text.append("\n\n")
 						
 						storyCount++
-					} else {
-						Calendar cal = Calendar.getInstance();
-						Date now = cal.getTime();
-						long diff = now.getTime() - entry.getPublishedDate().getTime();
-						
-//						log.info("Not within 24 hours:" + entry.getPublishedDate().toString())
-//						log.info("Difference is: " + diff)
-					}
+					} 
 				}
 			}
 			
