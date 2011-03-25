@@ -114,6 +114,7 @@ class EmailController {
 			render(view:"forwardError")
 		
 	}
+	
 	def pixel = {
 		String id = params.id
 		
