@@ -259,8 +259,11 @@ class EmailService implements InitializingBean, ApplicationContextAware {
             Message msg = new MimeMessage(session);
 
             msg.setFrom(new InternetAddress("admin@getmorningmail.com", "MorningMail"));
-			msg.addRecipient(Message.RecipientType.TO,
-							new InternetAddress(email.user.email));
+			
+			if (email.user.type == User.TYPE.STANDARD) { //temporarily do not send to subscribers
+				msg.addRecipient(Message.RecipientType.TO,
+								new InternetAddress(email.user.email));
+			}
 			msg.addRecipient(Message.RecipientType.BCC,
 							new InternetAddress("bebeastie@gmail.com"));
 						
