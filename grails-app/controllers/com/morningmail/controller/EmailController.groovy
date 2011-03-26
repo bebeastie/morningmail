@@ -112,10 +112,13 @@ class EmailController {
 			log.error("Had trouble creating LinkClick." +e)
 		}
 		
-		if (decodedUrl) 
+		if (decodedUrl) {
+			log.info("Redirecting to: $decodedUrl")
 			redirect(uri:decodedUrl)
-		else 
+		} else { 
+			log.error("decodedUrl is null, cannot forward");
 			render(view:"forwardError")
+		}
 		
 	}
 	
