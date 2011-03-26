@@ -33,16 +33,20 @@ class EmailController {
 		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.newsletterId))
 		User u = params.userId ? User.findById(KeyFactory.stringToKey(params.userId)) : nl.owner
 		
-		String display
+		String returnValue
 		
 		if (nl.subscribers.contains(u.id)) {
-			Email email = emailService.render(nl,u)
-			display = email.html.getValue()
+			User.withTransaction() {
+				Email email = emailService.render(nl,u)
+				u.emails.add(email) 
+				u.merge(flush:true)
+				returnValue = email.html.getValue()
+			}
 		} else {
-			display = "Attempted to send a newsletter to a user that is not subscribed!";
-			log.error(display)
+			returnValue = "Attempted to send a newsletter to a user that is not subscribed!";
+			log.error(returnValue)
 		}
-		render(view:'render', model:[returnValue:display])
+		render(view:'render', model:[returnValue:returnValue])
 	}
 	
 	/**
@@ -115,16 +119,16 @@ class EmailController {
 		
 	}
 	
-	def pixel = {
-		String id = params.id
-		
-		System.out.println("Id: " + id)
-		BufferedImage pixel;
-		pixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		pixel.setRGB(0, 0, (0xFF));
-
-		response.setContentType("image/png");
-		OutputStream os = response.getOutputStream();
-		ImageIO.write(pixel, "png", os);
-	}
+//	def pixel = {
+//		String id = params.id
+//		
+//		System.out.println("Id: " + id)
+//		BufferedImage pixel;
+//		pixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+//		pixel.setRGB(0, 0, (0xFF));
+//
+//		response.setContentType("image/png");
+//		OutputStream os = response.getOutputStream();
+//		ImageIO.write(pixel, "png", os);
+//	}
 }
