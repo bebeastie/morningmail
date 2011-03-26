@@ -124,9 +124,7 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 	
 	public Email render(Newsletter nl, User u) {
 		try {
-			em = EntityManagerFactoryUtils.getTransactionalEntityManager(entityManagerFactory)
-			def tx = em.getTransaction()
-			
+		
 			StringBuffer text = new StringBuffer()
 			StringBuffer html = new StringBuffer()
 					
@@ -244,16 +242,6 @@ class EmailService implements InitializingBean, ApplicationContextAware {
 			
 			email.status = Email.STATUS_PENDING
 			email.lastUpdated = new Date()
-
-			try {
-				u.emails.add(email) //this actually saves the email too
-				tx.commit()
-			} finally {
-				if (tx.isActive())
-					tx.rollback()
-			}
-			
-			tx.begin() //have to start another transaction, it will be closed by the container
 
 			return email
 		} catch (Exception e) {
