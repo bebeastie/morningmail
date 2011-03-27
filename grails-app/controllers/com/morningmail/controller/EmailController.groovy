@@ -83,12 +83,6 @@ class EmailController {
 	 * when a user clicks a link in an email.
 	 */
 	def link = {
-		String decodedUrl
-		try {
-			decodedUrl = URLDecoder.decode(params.url, "UTF-8")
-		} catch (Exception e) {
-			log.error("Had trouble decoding the URL.",e)
-		}
 		
 		try {
 			LinkClick lc = new LinkClick()
@@ -97,7 +91,7 @@ class EmailController {
 			lc.user = email.user.id
 			lc.interest = KeyFactory.stringToKey(params.interest)
 			lc.feed = KeyFactory.stringToKey(params.feed)
-			lc.url = decodedUrl
+			lc.url = params.url
 			lc.timeClicked = new Date();
 			if (lc.validate()) {
 				lc.save()
@@ -108,26 +102,13 @@ class EmailController {
 			log.error("Had trouble creating LinkClick." +e)
 		}
 		
-		if (decodedUrl) {
-			log.info("Redirecting to: $decodedUrl")
-			redirect(uri:decodedUrl)
+		if (params.url) {
+			log.info("Redirecting to: $params.url")
+			redirect(uri:params.url)
 		} else { 
-			log.error("decodedUrl is null, cannot forward");
+			log.error("url is null, cannot forward");
 			render(view:"forwardError")
 		}
 		
 	}
-	
-//	def pixel = {
-//		String id = params.id
-//		
-//		System.out.println("Id: " + id)
-//		BufferedImage pixel;
-//		pixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-//		pixel.setRGB(0, 0, (0xFF));
-//
-//		response.setContentType("image/png");
-//		OutputStream os = response.getOutputStream();
-//		ImageIO.write(pixel, "png", os);
-//	}
 }
