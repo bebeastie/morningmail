@@ -32,16 +32,12 @@ class EmailController {
 	def render = {
 		Newsletter nl = Newsletter.findById(KeyFactory.stringToKey(params.newsletterId))
 		User u = params.userId ? User.findById(KeyFactory.stringToKey(params.userId)) : nl.owner
-		
 		String returnValue
 		
 		if (nl.subscribers.contains(u.id)) {
-			User.withTransaction() {
 				Email email = emailService.render(nl,u)
-				u.emails.add(email) 
-				u.merge(flush:true)
+				email.save();
 				returnValue = email.html.getValue()
-			}
 		} else {
 			returnValue = "Attempted to send a newsletter to a user that is not subscribed!";
 			log.error(returnValue)
